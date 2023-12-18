@@ -4,7 +4,7 @@ namespace ApocSurviveHub.API.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int? LastSeenId { get; set; }
+        public int? LocatiionId { get; set; }
         public Location? LastSeen { get; set; }
         public int ThreatLevel { get; set; }
 
@@ -12,7 +12,7 @@ namespace ApocSurviveHub.API.Models
         {
             Name = name;
             ThreatLevel = threatLevel;
-            LastSeenId = lastSeenId;
+            LocatiionId = lastSeenId;
         }
     }
 }
