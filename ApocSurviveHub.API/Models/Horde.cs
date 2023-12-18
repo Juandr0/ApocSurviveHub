@@ -4,15 +4,15 @@ namespace ApocSurviveHub.API.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int? LocatiionId { get; set; }
+        public int? LocationId { get; set; }
         public Location? LastSeen { get; set; }
         public int ThreatLevel { get; set; }
 
-        public Horde(string name, int threatLevel, int? lastSeenId)
+        public Horde(string name, int threatLevel, int? locationId)
         {
             Name = name;
             ThreatLevel = threatLevel;
-            LocatiionId = lastSeenId;
+            LocationId = locationId;
         }
     }
 }
