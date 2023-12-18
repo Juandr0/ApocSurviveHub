@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "2y5FFVIEoexkSsFGmlDgPjPMc9McBoBYC9FXzBujbq8=",
+  "Source": "ApocSurviveHub.API",
+  "BasePath": "_content/ApocSurviveHub.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
