@@ -5,7 +5,7 @@
 namespace ApocSurviveHub.API.Migrations
 {
     /// <inheritdoc />
-    public partial class Migrations : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,15 +51,15 @@ namespace ApocSurviveHub.API.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
-                    LastSeenId = table.Column<int>(type: "INTEGER", nullable: true),
+                    LocationId = table.Column<int>(type: "INTEGER", nullable: true),
                     ThreatLevel = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Hordes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Hordes_Locations_LastSeenId",
-                        column: x => x.LastSeenId,
+                        name: "FK_Hordes_Locations_LocationId",
+                        column: x => x.LocationId,
                         principalTable: "Locations",
                         principalColumn: "Id");
                 });
@@ -72,14 +72,14 @@ namespace ApocSurviveHub.API.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     IsAlive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CurrentLocationId = table.Column<int>(type: "INTEGER", nullable: false)
+                    LocationId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Survivors", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Survivors_Locations_CurrentLocationId",
-                        column: x => x.CurrentLocationId,
+                        name: "FK_Survivors_Locations_LocationId",
+                        column: x => x.LocationId,
                         principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -107,9 +107,9 @@ namespace ApocSurviveHub.API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Hordes_LastSeenId",
+                name: "IX_Hordes_LocationId",
                 table: "Hordes",
-                column: "LastSeenId");
+                column: "LocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_SurvivorId",
@@ -122,9 +122,9 @@ namespace ApocSurviveHub.API.Migrations
                 column: "CoordinatesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Survivors_CurrentLocationId",
+                name: "IX_Survivors_LocationId",
                 table: "Survivors",
-                column: "CurrentLocationId");
+                column: "LocationId");
         }
 
         /// <inheritdoc />

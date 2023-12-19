@@ -126,3 +126,4 @@
 /Users/alexander/Documents/dev/Backend/Apoc Survive Hub/ApocSurviveHub/ApocSurviveHub.API/bin/Debug/net8.0/tr/Microsoft.CodeAnalysis.Workspaces.resources.dll
 /Users/alexander/Documents/dev/Backend/Apoc Survive Hub/ApocSurviveHub/ApocSurviveHub.API/bin/Debug/net8.0/zh-Hans/Microsoft.CodeAnalysis.Workspaces.resources.dll
 /Users/alexander/Documents/dev/Backend/Apoc Survive Hub/ApocSurviveHub/ApocSurviveHub.API/bin/Debug/net8.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.resources.dll
+/Users/alexander/Documents/dev/Backend/Apoc Survive Hub/ApocSurviveHub/ApocSurviveHub.API/obj/Debug/net8.0/ApocSurviveHub.API.sourcelink.json

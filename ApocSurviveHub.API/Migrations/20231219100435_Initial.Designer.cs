@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApocSurviveHub.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231218142115_Migrations")]
-    partial class Migrations
+    [Migration("20231219100435_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,7 +43,7 @@ namespace ApocSurviveHub.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("LastSeenId")
+                    b.Property<int?>("LocationId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -55,7 +55,7 @@ namespace ApocSurviveHub.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LastSeenId");
+                    b.HasIndex("LocationId");
 
                     b.ToTable("Hordes");
                 });
@@ -109,10 +109,10 @@ namespace ApocSurviveHub.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CurrentLocationId")
+                    b.Property<bool>("IsAlive")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsAlive")
+                    b.Property<int>("LocationId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -121,18 +121,16 @@ namespace ApocSurviveHub.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentLocationId");
+                    b.HasIndex("LocationId");
 
                     b.ToTable("Survivors");
                 });
 
             modelBuilder.Entity("ApocSurviveHub.API.Models.Horde", b =>
                 {
-                    b.HasOne("ApocSurviveHub.API.Models.Location", "LastSeen")
+                    b.HasOne("ApocSurviveHub.API.Models.Location", null)
                         .WithMany("Hordes")
-                        .HasForeignKey("LastSeenId");
-
-                    b.Navigation("LastSeen");
+                        .HasForeignKey("LocationId");
                 });
 
             modelBuilder.Entity("ApocSurviveHub.API.Models.Item", b =>
@@ -159,13 +157,11 @@ namespace ApocSurviveHub.API.Migrations
 
             modelBuilder.Entity("ApocSurviveHub.API.Models.Survivor", b =>
                 {
-                    b.HasOne("ApocSurviveHub.API.Models.Location", "CurrentLocation")
+                    b.HasOne("ApocSurviveHub.API.Models.Location", null)
                         .WithMany("Survivors")
-                        .HasForeignKey("CurrentLocationId")
+                        .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CurrentLocation");
                 });
 
             modelBuilder.Entity("ApocSurviveHub.API.Models.Location", b =>

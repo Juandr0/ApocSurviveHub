@@ -30,9 +30,10 @@ app.MapPost("/Survivor", async (
     AppDbContext dbContext,
     string Name,
     bool IsAlive,
+    string locationName,
     double _latitude,
-    double _longitude,
-    string locationName) =>
+    double _longitude
+   ) =>
 {
     var coordinates = new Coordinates { Latitude = _latitude, Longitude = _longitude };
     var location = new Location(locationName, _longitude, _latitude);
@@ -69,14 +70,14 @@ app.MapPut("/Survivor", async (
     survivor.Name = Name ?? survivor.Name;
     survivor.IsAlive = IsAlive ?? survivor.IsAlive;
 
-    if (locationName != null && _latitude.HasValue && _longitude.HasValue)
-    {
-        survivor.CurrentLocation = new Location(
-            name: locationName,
-            longitude: (double)_longitude,
-            latitude: (double)_latitude
-            );
-    }
+    // if (locationName != null && _latitude.HasValue && _longitude.HasValue)
+    // {
+    //     survivor.CurrentLocation = new Location(
+    //         name: locationName,
+    //         longitude: (double)_longitude,
+    //         latitude: (double)_latitude
+    //         );
+    // }
 
 
     await dbContext.SaveChangesAsync();
