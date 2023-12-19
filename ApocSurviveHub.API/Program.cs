@@ -48,6 +48,27 @@ app.MapDelete("/Survivor", (AppDbContext dbContext, int survivorId) =>
 });
 
 
+// Hordes
+
+app.MapPost("/Horde", (AppDbContext dbContext, string Name, int ThreatLevel, string lastSeen, double _latitude, double _longitude) =>
+{
+    return HordeService.CreateHorde(dbContext, Name, ThreatLevel, lastSeen, _latitude, _longitude);
+});
+
+app.MapGet("/Horde", (AppDbContext dbContext) =>
+{
+    return HordeService.GetHordes(dbContext);
+});
+
+app.MapPut("/Horde", (AppDbContext dbContext, int hordeId, string? Name, int? ThreatLevel, string? lastSeen, double? latitude, double? longitude) =>
+{
+    return HordeService.UpdateHorde(dbContext, hordeId, Name, ThreatLevel, lastSeen, latitude, longitude);
+});
+
+app.MapDelete("/Horde", (AppDbContext dbContext, int hordeId) =>
+{
+    return HordeService.DeleteHorde(dbContext, hordeId);
+});
 
 
 app.Run();
