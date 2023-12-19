@@ -60,29 +60,31 @@ app.MapPut("/Survivor", async (
     string? Name,
     bool? IsAlive,
     string? locationName,
-    double? _latitude,
-    double? _longitude
+    double? latitude,
+    double? longitude
     ) =>
 {
     var survivor = await dbContext.Survivors.FindAsync(survivorId);
-    if (survivor is null) return Results.NotFound();
+    if (survivor is null) return null;
 
     survivor.Name = Name ?? survivor.Name;
     survivor.IsAlive = IsAlive ?? survivor.IsAlive;
 
-    // if (locationName != null && _latitude.HasValue && _longitude.HasValue)
-    // {
-    //     survivor.CurrentLocation = new Location(
-    //         name: locationName,
-    //         longitude: (double)_longitude,
-    //         latitude: (double)_latitude
-    //         );
-    // }
+    if (locationName != null && latitude.HasValue && longitude.HasValue)
+    {
+        var newLocation = new Location(
+            name: locationName,
+            longitude: (double)longitude,
+            latitude: (double)latitude
+            );
 
+        dbContext.Locations.Add(newLocation);
+        await dbContext.SaveChangesAsync();
+        survivor.LocationId = newLocation.Id;
+    }
 
     await dbContext.SaveChangesAsync();
-
-    return Results.NoContent();
+    return survivor;
 });
 
 // app.MapDelete("/Survivor")) {
