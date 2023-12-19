@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Data;
 using Microsoft.EntityFrameworkCore;
+using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,78 +26,28 @@ app.UseHttpsRedirection();
 
 
 // Survivors 
-app.MapPost("/Survivor", async (
-    AppDbContext dbContext,
-    string Name,
-    bool IsAlive,
-    string locationName,
-    double _latitude,
-    double _longitude
-   ) =>
+
+app.MapPost("/Survivor", (AppDbContext dbContext, string Name, bool IsAlive, string locationName, double _latitude, double _longitude) =>
 {
-    var coordinates = new Coordinates { Latitude = _latitude, Longitude = _longitude };
-    var location = new Location(locationName, _longitude, _latitude);
-
-    dbContext.Locations.Add(location);
-    await dbContext.SaveChangesAsync();
-
-    var survivor = new Survivor(Name, IsAlive, location.Id);
-    dbContext.Survivors.Add(survivor);
-    await dbContext.SaveChangesAsync();
-
-    return Results.Created($"/Survivor/{survivor.Id}", survivor);
+    return SurvivorService.CreateSurvivor(dbContext, Name, IsAlive, locationName, _latitude, _longitude);
 });
 
 app.MapGet("/Survivor", (AppDbContext dbContext) =>
 {
-    var survivors = dbContext.Survivors.ToList();
-    return survivors;
+    return SurvivorService.GetSurvivors(dbContext);
 });
 
-app.MapPut("/Survivor", async (
-    AppDbContext dbContext,
-    int survivorId,
-    string? Name,
-    bool? IsAlive,
-    string? locationName,
-    double? latitude,
-    double? longitude
-    ) =>
+app.MapPut("/Survivor", (AppDbContext dbContext, int survivorId, string? Name, bool? IsAlive, string? locationName, double? latitude, double? longitude) =>
 {
-    var survivor = await dbContext.Survivors.FindAsync(survivorId);
-    if (survivor is null) return null;
-
-    survivor.Name = Name ?? survivor.Name;
-    survivor.IsAlive = IsAlive ?? survivor.IsAlive;
-
-    if (locationName != null && latitude.HasValue && longitude.HasValue)
-    {
-        var newLocation = new Location(
-            name: locationName,
-            longitude: (double)longitude,
-            latitude: (double)latitude
-            );
-
-        dbContext.Locations.Add(newLocation);
-        await dbContext.SaveChangesAsync();
-        survivor.LocationId = newLocation.Id;
-    }
-
-    await dbContext.SaveChangesAsync();
-    return survivor;
+    return SurvivorService.UpdateSurvivor(dbContext, survivorId, Name, IsAlive, locationName, latitude, longitude);
 });
 
-app.MapDelete("/Survivor", async (AppDbContext dbContext, int survivorId) =>
+app.MapDelete("/Survivor", (AppDbContext dbContext, int survivorId) =>
 {
-    var survivor = await dbContext.Survivors.FindAsync(survivorId);
-    if (survivor is null) return null;
-
-    dbContext.Survivors.Remove(survivor);
-    await dbContext.SaveChangesAsync();
-
-    return survivor;
-
+    return SurvivorService.DeleteSurvivor(dbContext, survivorId);
 });
+
+
 
 
 app.Run();
