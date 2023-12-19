@@ -25,7 +25,6 @@ app.UseHttpsRedirection();
 
 
 // Survivors 
-
 app.MapPost("/Survivor", async (
     AppDbContext dbContext,
     string Name,
@@ -87,10 +86,17 @@ app.MapPut("/Survivor", async (
     return survivor;
 });
 
-// app.MapDelete("/Survivor")) {
+app.MapDelete("/Survivor", async (AppDbContext dbContext, int survivorId) =>
+{
+    var survivor = await dbContext.Survivors.FindAsync(survivorId);
+    if (survivor is null) return null;
 
-// }
+    dbContext.Survivors.Remove(survivor);
+    await dbContext.SaveChangesAsync();
 
+    return survivor;
+
+});
 
 
 app.Run();
