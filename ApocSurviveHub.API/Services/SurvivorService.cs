@@ -1,6 +1,7 @@
 using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Services;
 
@@ -28,7 +29,7 @@ public abstract class SurvivorService
 
     public static IEnumerable<Survivor> GetSurvivors(AppDbContext dbContext)
     {
-        return dbContext.Survivors.ToList();
+        return dbContext.Survivors.Include(s => s.Inventory).ToList();
     }
 
     public static async Task<IActionResult> UpdateSurvivor(
@@ -74,7 +75,7 @@ public abstract class SurvivorService
         return new OkObjectResult(survivor);
     }
 
-
+    // Add item to survivor inventory
 
     public static async Task<IActionResult> AddItem(
             AppDbContext dbContext,
@@ -87,9 +88,10 @@ public abstract class SurvivorService
         var item = await dbContext.Items.FindAsync(itemId);
         if (item is null) return new NotFoundResult();
 
+        survivor.Inventory.Add(item);
         await dbContext.SaveChangesAsync();
 
-        return new CreatedResult();
+        return new OkObjectResult(survivor);
     }
 
 
