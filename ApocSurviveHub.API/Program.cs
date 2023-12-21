@@ -47,6 +47,12 @@ app.MapDelete("/Survivor", (AppDbContext dbContext, int survivorId) =>
     return SurvivorService.DeleteSurvivor(dbContext, survivorId);
 });
 
+app.MapPut("/SurvivorAddItem", (AppDbContext dbContext, int survivorId, int itemId) =>
+{
+    return SurvivorService.AddItem(dbContext, survivorId, itemId);
+});
+
+
 
 // Hordes
 
