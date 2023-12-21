@@ -11,7 +11,6 @@ namespace ApocSurviveHub.API.Models
         {
             Name = name;
             Type = type;
-        
         }
     }
 

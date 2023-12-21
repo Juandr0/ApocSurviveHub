@@ -47,6 +47,21 @@ app.MapDelete("/Survivor", (AppDbContext dbContext, int survivorId) =>
     return SurvivorService.DeleteSurvivor(dbContext, survivorId);
 });
 
+app.MapPut("/Survivor/Inventory/Add", (AppDbContext dbContext, int survivorId, int itemId) =>
+{
+    return SurvivorService.AddItem(dbContext, survivorId, itemId);
+});
+
+// app.MapGet("/Survivor/Inventory/Get", (AppDbContext dbContext, int survivorId) =>
+// {
+//     return SurvivorService.GetItems(dbContext, survivorId);
+// });
+
+app.MapPut("/Survivor/Inventory/Remove", (AppDbContext dbContext, int survivorId, int itemId) =>
+{
+    return SurvivorService.RemoveItem(dbContext, survivorId, itemId);
+});
+
 
 // Hordes
 
@@ -77,15 +92,21 @@ app.MapPost("/Item", (AppDbContext dbContext, string name, string type) =>
     return ItemService.CreateItem(dbContext, null, name, type);
 });
 
-// app.MapPut("/Item", (AppDbContext dbContext, int itemId, string name, string type) =>
-// {
-//     return SurvivorService.UpdateItem(dbContext, itemId, name, type);
-// });
+app.MapGet("/Item", (AppDbContext dbContext) =>
+{
+    return ItemService.GetItems(dbContext);
+});
 
-// app.MapDelete("/Item", (AppDbContext dbContext, int itemId) =>
-// {
-//     return SurvivorService.DeleteItem(dbContext, itemId);
-// });
+app.MapPut("/Item", (AppDbContext dbContext, int itemId, string? name, string? type) =>
+{
+    return ItemService.UpdateItem(dbContext, itemId, name, type);
+});
+
+app.MapDelete("/Item", (AppDbContext dbContext, int itemId) =>
+{
+    return ItemService.DeleteItem(dbContext, itemId);
+});
+
 
 
 app.Run();
