@@ -93,7 +93,7 @@ namespace ApocSurviveHub.API.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Type = table.Column<string>(type: "TEXT", nullable: false),
-                    SurvivorId = table.Column<int>(type: "INTEGER", nullable: false)
+                    SurvivorId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -102,8 +102,7 @@ namespace ApocSurviveHub.API.Migrations
                         name: "FK_Items_Survivors_SurvivorId",
                         column: x => x.SurvivorId,
                         principalTable: "Survivors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
