@@ -67,7 +67,7 @@ namespace ApocSurviveHub.API.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("SurvivorId")
+                    b.Property<int?>("SurvivorId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Type")
@@ -132,13 +132,9 @@ namespace ApocSurviveHub.API.Migrations
 
             modelBuilder.Entity("ApocSurviveHub.API.Models.Item", b =>
                 {
-                    b.HasOne("ApocSurviveHub.API.Models.Survivor", "Survivor")
+                    b.HasOne("ApocSurviveHub.API.Models.Survivor", null)
                         .WithMany("Inventory")
-                        .HasForeignKey("SurvivorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Survivor");
+                        .HasForeignKey("SurvivorId");
                 });
 
             modelBuilder.Entity("ApocSurviveHub.API.Models.Location", b =>

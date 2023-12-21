@@ -70,5 +70,22 @@ app.MapDelete("/Horde", (AppDbContext dbContext, int hordeId) =>
     return HordeService.DeleteHorde(dbContext, hordeId);
 });
 
+// Items 
+
+app.MapPost("/Item", (AppDbContext dbContext, string name, string type) =>
+{
+    return ItemService.CreateItem(dbContext, null, name, type);
+});
+
+// app.MapPut("/Item", (AppDbContext dbContext, int itemId, string name, string type) =>
+// {
+//     return SurvivorService.UpdateItem(dbContext, itemId, name, type);
+// });
+
+// app.MapDelete("/Item", (AppDbContext dbContext, int itemId) =>
+// {
+//     return SurvivorService.DeleteItem(dbContext, itemId);
+// });
+
 
 app.Run();

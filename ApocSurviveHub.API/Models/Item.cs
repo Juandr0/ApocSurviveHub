@@ -5,14 +5,13 @@ namespace ApocSurviveHub.API.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
-        public int SurvivorId { get; set; }
-        public Survivor? Survivor { get; set; }
 
-        Item(string name, string type, int survivorId)
+
+        public Item(string name, string type)
         {
             Name = name;
             Type = type;
-            SurvivorId = survivorId;
+        
         }
     }
 
