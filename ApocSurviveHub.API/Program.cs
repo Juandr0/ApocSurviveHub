@@ -52,6 +52,11 @@ app.MapPut("/Survivor/Inventory/Add", (AppDbContext dbContext, int survivorId, i
     return SurvivorService.AddItem(dbContext, survivorId, itemId);
 });
 
+// app.MapGet("/Survivor/Inventory/Get", (AppDbContext dbContext, int survivorId) =>
+// {
+//     return SurvivorService.GetItems(dbContext, survivorId);
+// });
+
 app.MapPut("/Survivor/Inventory/Remove", (AppDbContext dbContext, int survivorId, int itemId) =>
 {
     return SurvivorService.RemoveItem(dbContext, survivorId, itemId);

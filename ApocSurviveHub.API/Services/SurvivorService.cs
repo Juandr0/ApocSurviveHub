@@ -91,6 +91,15 @@ public abstract class SurvivorService
         return new OkObjectResult(survivor);
     }
 
+    // public static async Task<Survivor> GetItems(AppDbContext dbContext, int survivorId)
+    // {
+    //     var survivor = await dbContext.Survivors.FindAsync(survivorId);
+    //     if (survivor is null) return new NotFoundResult();
+
+    //     //Get
+    //     return survivor.Inventory
+    // }
+
     public static async Task<IActionResult> RemoveItem(AppDbContext dbContext, int survivorId, int itemId)
     {
         var survivor = await dbContext.Survivors.FindAsync(survivorId);
