@@ -47,11 +47,15 @@ app.MapDelete("/Survivor", (AppDbContext dbContext, int survivorId) =>
     return SurvivorService.DeleteSurvivor(dbContext, survivorId);
 });
 
-app.MapPut("/SurvivorAddItem", (AppDbContext dbContext, int survivorId, int itemId) =>
+app.MapPut("/Survivor/Inventory/Add", (AppDbContext dbContext, int survivorId, int itemId) =>
 {
     return SurvivorService.AddItem(dbContext, survivorId, itemId);
 });
 
+app.MapPut("/Survivor/Inventory/Remove", (AppDbContext dbContext, int survivorId, int itemId) =>
+{
+    return SurvivorService.RemoveItem(dbContext, survivorId, itemId);
+});
 
 
 // Hordes
