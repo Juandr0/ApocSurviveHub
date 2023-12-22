@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ApocSurviveHub.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4cb35602598f3747b51ef4a422bcc5c5ad8ccdbe")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+053623cc9d96f8e82a1c3b00b11a4c7802866419")]
 [assembly: System.Reflection.AssemblyProductAttribute("ApocSurviveHub.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ApocSurviveHub.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

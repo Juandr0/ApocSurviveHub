@@ -1,6 +1,7 @@
 using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Services;
 
@@ -8,14 +9,11 @@ public abstract class ItemService
 {
     public static async Task<IActionResult> CreateItem(
             AppDbContext dbContext,
-            int? survivorId,
             string name,
-            string type)
+            string type,
+            int? locationId)
     {
-        // var survivor = await dbContext.Survivors.FindAsync(survivorId);
-        // if (survivor is null) return new NotFoundResult();
-
-        var item = new Item(name, type);
+        var item = new Item(name, type, locationId);
         dbContext.Items.Add(item);
 
         await dbContext.SaveChangesAsync();
@@ -30,7 +28,11 @@ public abstract class ItemService
 
     public static async Task<IActionResult> UpdateItem(AppDbContext dbContext, int itemId, string? name, string? type)
     {
-        var item = await dbContext.Items.FindAsync(itemId);
+        var item = await dbContext.Items.
+        Include(i => i.LocationId).
+        Include(i => i.Location).
+        FirstOrDefaultAsync(i => i.Id == itemId);
+
         if (item is null) return new NotFoundResult();
 
         item.Name = name ?? item.Name;

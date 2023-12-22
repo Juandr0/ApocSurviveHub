@@ -12,22 +12,24 @@ public abstract class SurvivorService
     string Name,
     bool IsAlive,
     int? locationId)
-{
-    var survivor = new Survivor(Name, IsAlive, locationId);
-
-    if (locationId.HasValue)
     {
-        survivor.LocationId = locationId.Value;
+        var survivor = new Survivor(Name, IsAlive, locationId);
+
+        if (locationId.HasValue)
+        {
+            survivor.LocationId = locationId.Value;
+        }
+
+        dbContext.Survivors.Add(survivor);
+        await dbContext.SaveChangesAsync();
+
+        return new CreatedResult($"/Survivor/{survivor.Id}", survivor);
     }
-
-    dbContext.Survivors.Add(survivor);
-    await dbContext.SaveChangesAsync();
-
-    return new CreatedResult($"/Survivor/{survivor.Id}", survivor);
-}
     public static IEnumerable<Survivor> GetSurvivors(AppDbContext dbContext)
     {
-        return dbContext.Survivors.Include(s => s.Inventory).Include(s => s.Location).ThenInclude(l => l!.Coordinates).ToList();
+        return dbContext.Survivors.Include(s => s.Inventory)
+        .Include(s => s.Location)
+        .ThenInclude(l => l!.Coordinates).ToList();
     }
 
     public static async Task<IActionResult> UpdateSurvivor(
@@ -37,14 +39,24 @@ public abstract class SurvivorService
         bool? IsAlive,
         int? locationId)
     {
-        var survivor = await dbContext.Survivors.FindAsync(survivorId);
+        var survivor = await dbContext.Survivors
+            .Include(s => s.Inventory)
+            .Include(s => s.Location)
+            .FirstOrDefaultAsync(s => s.Id == survivorId);
         if (survivor is null) return new NotFoundResult();
 
         survivor.Name = Name ?? survivor.Name;
         survivor.IsAlive = IsAlive ?? survivor.IsAlive;
 
-        if (locationId.HasValue)survivor.LocationId = locationId.Value;
-            
+        if (locationId.HasValue)
+        {
+            survivor.LocationId = locationId;
+            foreach (var item in survivor.Inventory)
+            {
+                item.LocationId = locationId;
+            }
+        }
+
         await dbContext.SaveChangesAsync();
         return new OkObjectResult(survivor);
     }
@@ -56,7 +68,6 @@ public abstract class SurvivorService
 
         dbContext.Survivors.Remove(survivor);
         await dbContext.SaveChangesAsync();
-
         return new OkObjectResult(survivor);
     }
 
@@ -70,8 +81,26 @@ public abstract class SurvivorService
         var item = await dbContext.Items.FindAsync(itemId);
         if (item is null) return new NotFoundResult();
 
-        survivor.Inventory.Add(item);
-        await dbContext.SaveChangesAsync();
+        if (item.LocationId is not null)
+        {
+            if (item.LocationId == survivor.LocationId)
+            {
+                item.LocationId = survivor.LocationId;
+                item.Location = survivor.Location;
+                await dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                Console.WriteLine("Survivor and Item is not at the same place");
+            }
+        }
+        else
+        {
+            item.LocationId = survivor.LocationId;
+            item.Location = survivor.Location;
+            survivor.Inventory.Add(item);
+            await dbContext.SaveChangesAsync();
+        }
 
         return new OkObjectResult(survivor);
     }
@@ -89,44 +118,5 @@ public abstract class SurvivorService
 
         return new OkObjectResult(survivor);
     }
-
-    // Survivor location handling 
-
-//     public static async Task<IActionResult> AddLocation(AppDbContext dbContext, int survivorId, int locationId)
-//     {
-//     var survivor = await dbContext.Survivors
-//         .Include(s => s.Location)  
-//         .FirstOrDefaultAsync(s => s.Id == survivorId);
-
-//     if (survivor is null) return new NotFoundResult();
-
-//     var location = await dbContext.Locations
-//         .Include(l => l.Coordinates) 
-//         .FirstOrDefaultAsync(l => l.Id == locationId);
-
-//     if (location is null) return new NotFoundResult();
-
-//     survivor.Location = location;
-//     await dbContext.SaveChangesAsync();
-
-//     return new OkObjectResult(survivor);
-//    }
-
-//     public static async Task<IActionResult> RemoveLocation(AppDbContext dbContext, int survivorId)
-// {
-//     var survivor = await dbContext.Survivors
-//         .Include(s => s.Location)
-//         .FirstOrDefaultAsync(s => s.Id == survivorId);
-
-//     if (survivor is null) return new NotFoundResult();
-
-//     survivor.Location = null;
-
-//     await dbContext.SaveChangesAsync();
-
-//     return new OkObjectResult(survivor);
-// }
-
-
 }
 

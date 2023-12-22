@@ -86,9 +86,9 @@ app.MapDelete("/Horde", (AppDbContext dbContext, int hordeId) =>
 //// ITEMS START ////
 /////////////////////
 
-app.MapPost("/Item", (AppDbContext dbContext, string name, string type) =>
+app.MapPost("/Item", (AppDbContext dbContext, string name, string type, int? locationId) =>
 {
-    return ItemService.CreateItem(dbContext, null, name, type);
+    return ItemService.CreateItem(dbContext, name, type, locationId);
 });
 
 app.MapGet("/Item", (AppDbContext dbContext) =>

@@ -5,8 +5,6 @@ namespace ApocSurviveHub.API.Models
         public int Id { get; set; }
         public string? Name { get; set; }
         public Coordinates Coordinates { get; set; }
-        public ICollection<Survivor> Survivors { get; set; } = new List<Survivor>();
-        public ICollection<Horde> Hordes { get; set; } = new List<Horde>();
 
         private Location()
         {

@@ -16,14 +16,14 @@ public abstract class HordeService
         var horde = new Horde(Name, ThreatLevel, locationId);
 
         if (locationId.HasValue)
-    {
-        horde.LocationId = locationId.Value;
-    }
+        {
+            horde.LocationId = locationId.Value;
+        }
 
-    dbContext.Hordes.Add(horde);
-    await dbContext.SaveChangesAsync();
+        dbContext.Hordes.Add(horde);
+        await dbContext.SaveChangesAsync();
 
-    return new CreatedResult($"/Horde/{horde.Id}", horde);
+        return new CreatedResult($"/Horde/{horde.Id}", horde);
     }
 
     public static IEnumerable<Horde> GetHordes(AppDbContext dbContext)
@@ -44,13 +44,15 @@ public abstract class HordeService
         horde.Name = Name ?? horde.Name;
         horde.ThreatLevel = ThreatLevel ?? horde.ThreatLevel;
 
-        if (locationId.HasValue) { horde.LocationId = locationId.Value;
+        if (locationId.HasValue)
+        {
+            horde.LocationId = locationId.Value;
             var getLocationFromId = await dbContext.Locations
-            .Include(l => l.Coordinates) 
+            .Include(l => l.Coordinates)
             .FirstOrDefaultAsync(l => l.Id == locationId);
             horde.Location = getLocationFromId;
-        } 
-        
+        }
+
         await dbContext.SaveChangesAsync();
         return new OkObjectResult(horde);
     }
