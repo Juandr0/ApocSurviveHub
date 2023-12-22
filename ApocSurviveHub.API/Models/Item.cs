@@ -9,10 +9,11 @@ namespace ApocSurviveHub.API.Models
         public Location? Location { get; set; }
 
 
-        public Item(string name, string type)
+        public Item(string name, string type, int? locationId)
         {
             Name = name;
             Type = type;
+            LocationId = locationId;
         }
     }
 

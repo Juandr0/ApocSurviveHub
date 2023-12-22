@@ -131,7 +131,7 @@ namespace ApocSurviveHub.API.Migrations
             modelBuilder.Entity("ApocSurviveHub.API.Models.Horde", b =>
                 {
                     b.HasOne("ApocSurviveHub.API.Models.Location", "Location")
-                        .WithMany("Hordes")
+                        .WithMany()
                         .HasForeignKey("LocationId");
 
                     b.Navigation("Location");
@@ -164,17 +164,10 @@ namespace ApocSurviveHub.API.Migrations
             modelBuilder.Entity("ApocSurviveHub.API.Models.Survivor", b =>
                 {
                     b.HasOne("ApocSurviveHub.API.Models.Location", "Location")
-                        .WithMany("Survivors")
+                        .WithMany()
                         .HasForeignKey("LocationId");
 
                     b.Navigation("Location");
-                });
-
-            modelBuilder.Entity("ApocSurviveHub.API.Models.Location", b =>
-                {
-                    b.Navigation("Hordes");
-
-                    b.Navigation("Survivors");
                 });
 
             modelBuilder.Entity("ApocSurviveHub.API.Models.Survivor", b =>
