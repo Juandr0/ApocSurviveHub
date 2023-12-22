@@ -5,7 +5,7 @@
 namespace ApocSurviveHub.API.Migrations
 {
     /// <inheritdoc />
-    public partial class SqLite : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -72,7 +72,7 @@ namespace ApocSurviveHub.API.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     IsAlive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    LocationId = table.Column<int>(type: "INTEGER", nullable: false)
+                    LocationId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -81,8 +81,7 @@ namespace ApocSurviveHub.API.Migrations
                         name: "FK_Survivors_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -93,11 +92,17 @@ namespace ApocSurviveHub.API.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Type = table.Column<string>(type: "TEXT", nullable: false),
+                    LocationId = table.Column<int>(type: "INTEGER", nullable: true),
                     SurvivorId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Items", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Items_Locations_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Locations",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Items_Survivors_SurvivorId",
                         column: x => x.SurvivorId,
@@ -108,6 +113,11 @@ namespace ApocSurviveHub.API.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Hordes_LocationId",
                 table: "Hordes",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Items_LocationId",
+                table: "Items",
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(

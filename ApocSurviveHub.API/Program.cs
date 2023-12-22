@@ -24,12 +24,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+/////////////////////
+// SURVIVORS START //
+/////////////////////
 
-// Survivors 
-
-app.MapPost("/Survivor", (AppDbContext dbContext, string Name, bool IsAlive, string locationName, double _latitude, double _longitude) =>
+app.MapPost("/Survivor", (AppDbContext dbContext, string Name, bool IsAlive, int? locationId) =>
 {
-    return SurvivorService.CreateSurvivor(dbContext, Name, IsAlive, locationName, _latitude, _longitude);
+    return SurvivorService.CreateSurvivor(dbContext, Name, IsAlive, locationId);
 });
 
 app.MapGet("/Survivor", (AppDbContext dbContext) =>
@@ -37,9 +38,9 @@ app.MapGet("/Survivor", (AppDbContext dbContext) =>
     return SurvivorService.GetSurvivors(dbContext);
 });
 
-app.MapPut("/Survivor", (AppDbContext dbContext, int survivorId, string? Name, bool? IsAlive, string? locationName, double? latitude, double? longitude) =>
+app.MapPut("/Survivor", (AppDbContext dbContext, int survivorId, string? Name, bool? IsAlive, int? locationId) =>
 {
-    return SurvivorService.UpdateSurvivor(dbContext, survivorId, Name, IsAlive, locationName, latitude, longitude);
+    return SurvivorService.UpdateSurvivor(dbContext, survivorId, Name, IsAlive, locationId);
 });
 
 app.MapDelete("/Survivor", (AppDbContext dbContext, int survivorId) =>
@@ -52,22 +53,18 @@ app.MapPut("/Survivor/Inventory/Add", (AppDbContext dbContext, int survivorId, i
     return SurvivorService.AddItem(dbContext, survivorId, itemId);
 });
 
-// app.MapGet("/Survivor/Inventory/Get", (AppDbContext dbContext, int survivorId) =>
-// {
-//     return SurvivorService.GetItems(dbContext, survivorId);
-// });
-
 app.MapPut("/Survivor/Inventory/Remove", (AppDbContext dbContext, int survivorId, int itemId) =>
 {
     return SurvivorService.RemoveItem(dbContext, survivorId, itemId);
 });
 
+/////////////////////
+/// HORDES START ////
+/////////////////////
 
-// Hordes
-
-app.MapPost("/Horde", (AppDbContext dbContext, string Name, int ThreatLevel, string lastSeen, double _latitude, double _longitude) =>
+app.MapPost("/Horde", (AppDbContext dbContext, string Name, int ThreatLevel, int? locationId) =>
 {
-    return HordeService.CreateHorde(dbContext, Name, ThreatLevel, lastSeen, _latitude, _longitude);
+    return HordeService.CreateHorde(dbContext, Name, ThreatLevel, locationId);
 });
 
 app.MapGet("/Horde", (AppDbContext dbContext) =>
@@ -75,9 +72,9 @@ app.MapGet("/Horde", (AppDbContext dbContext) =>
     return HordeService.GetHordes(dbContext);
 });
 
-app.MapPut("/Horde", (AppDbContext dbContext, int hordeId, string? Name, int? ThreatLevel, string? lastSeen, double? latitude, double? longitude) =>
+app.MapPut("/Horde", (AppDbContext dbContext, int hordeId, string? Name, int? ThreatLevel, int? locationId) =>
 {
-    return HordeService.UpdateHorde(dbContext, hordeId, Name, ThreatLevel, lastSeen, latitude, longitude);
+    return HordeService.UpdateHorde(dbContext, hordeId, Name, ThreatLevel, locationId);
 });
 
 app.MapDelete("/Horde", (AppDbContext dbContext, int hordeId) =>
@@ -85,7 +82,9 @@ app.MapDelete("/Horde", (AppDbContext dbContext, int hordeId) =>
     return HordeService.DeleteHorde(dbContext, hordeId);
 });
 
-// Items 
+/////////////////////
+//// ITEMS START ////
+/////////////////////
 
 app.MapPost("/Item", (AppDbContext dbContext, string name, string type) =>
 {
@@ -107,6 +106,25 @@ app.MapDelete("/Item", (AppDbContext dbContext, int itemId) =>
     return ItemService.DeleteItem(dbContext, itemId);
 });
 
+
+/////////////////////
+// LOCATIONS START //
+/////////////////////
+
+app.MapPost("/Location", (AppDbContext dbContext, string name, double longitude, double latitude) =>
+{
+    return LocationService.CreateLocation(dbContext, name, longitude, latitude);
+});
+
+app.MapGet("/Location", (AppDbContext dbContext) =>
+{
+    return LocationService.GetLocations(dbContext);
+});
+
+app.MapPut("/Location", (AppDbContext dbContext, int locationId, string? name, double? longitude, double? latitude) =>
+{
+    return LocationService.UpdateLocation(dbContext, locationId, name, longitude, latitude);
+});
 
 
 app.Run();

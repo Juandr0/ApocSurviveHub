@@ -5,10 +5,11 @@ namespace ApocSurviveHub.API.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public bool IsAlive { get; set; }
-        public int LocationId { get; set; }
+        public int? LocationId { get; set; }
+        public Location? Location { get; set; }
         public ICollection<Item> Inventory { get; set; } = new List<Item>();
 
-        public Survivor(String name, bool isAlive, int locationId)
+        public Survivor(String name, bool isAlive, int? locationId)
         {
             Name = name;
             IsAlive = isAlive;
