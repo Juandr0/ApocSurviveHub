@@ -5,6 +5,7 @@ namespace ApocSurviveHub.API.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public int? LocationId { get; set; }
+        public Location? Location { get; set; }
         public int ThreatLevel { get; set; }
 
         public Horde(string name, int threatLevel, int? locationId)

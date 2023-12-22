@@ -1,6 +1,7 @@
 using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Services;
 
@@ -10,25 +11,24 @@ public abstract class HordeService
         AppDbContext dbContext,
         string Name,
         int ThreatLevel,
-        string lastSeen,
-        double _latitude,
-        double _longitude)
+        int? locationId)
     {
-        var location = new Location(lastSeen, _longitude, _latitude);
+        var horde = new Horde(Name, ThreatLevel, locationId);
 
-        dbContext.Locations.Add(location);
-        await dbContext.SaveChangesAsync();
+        if (locationId.HasValue)
+    {
+        horde.LocationId = locationId.Value;
+    }
 
-        var horde = new Horde(Name, ThreatLevel, location.Id);
-        dbContext.Hordes.Add(horde);
-        await dbContext.SaveChangesAsync();
+    dbContext.Hordes.Add(horde);
+    await dbContext.SaveChangesAsync();
 
-        return new CreatedResult($"/Horde/{horde.Id}", horde);
+    return new CreatedResult($"/Horde/{horde.Id}", horde);
     }
 
     public static IEnumerable<Horde> GetHordes(AppDbContext dbContext)
     {
-        return dbContext.Hordes.ToList();
+        return dbContext.Hordes.Include(h => h.Location).ThenInclude(l => l!.Coordinates).ToList();
     }
 
     public static async Task<IActionResult> UpdateHorde(
@@ -36,9 +36,7 @@ public abstract class HordeService
         int hordeId,
         string? Name,
         int? ThreatLevel,
-        string? lastSeen,
-        double? latitude,
-        double? longitude)
+        int? locationId)
     {
         var horde = await dbContext.Hordes.FindAsync(hordeId);
         if (horde is null) return new NotFoundResult();
@@ -46,19 +44,13 @@ public abstract class HordeService
         horde.Name = Name ?? horde.Name;
         horde.ThreatLevel = ThreatLevel ?? horde.ThreatLevel;
 
-        if (lastSeen != null && latitude.HasValue && longitude.HasValue)
-        {
-            var newLocation = new Location(
-                name: lastSeen,
-                longitude: (double)longitude,
-                latitude: (double)latitude
-            );
-
-            dbContext.Locations.Add(newLocation);
-            await dbContext.SaveChangesAsync();
-            horde.LocationId = newLocation.Id;
-        }
-
+        if (locationId.HasValue) { horde.LocationId = locationId.Value;
+            var getLocationFromId = await dbContext.Locations
+            .Include(l => l.Coordinates) 
+            .FirstOrDefaultAsync(l => l.Id == locationId);
+            horde.Location = getLocationFromId;
+        } 
+        
         await dbContext.SaveChangesAsync();
         return new OkObjectResult(horde);
     }
