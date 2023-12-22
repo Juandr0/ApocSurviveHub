@@ -27,7 +27,9 @@ public abstract class SurvivorService
     }
     public static IEnumerable<Survivor> GetSurvivors(AppDbContext dbContext)
     {
-        return dbContext.Survivors.Include(s => s.Inventory).Include(s => s.Location).ThenInclude(l => l!.Coordinates).ToList();
+        return dbContext.Survivors.Include(s => s.Inventory)
+        .Include(s => s.Location)
+        .ThenInclude(l => l!.Coordinates).ToList();
     }
 
     public static async Task<IActionResult> UpdateSurvivor(
@@ -37,13 +39,23 @@ public abstract class SurvivorService
         bool? IsAlive,
         int? locationId)
     {
-        var survivor = await dbContext.Survivors.FindAsync(survivorId);
+        var survivor = await dbContext.Survivors
+            .Include(s => s.Inventory)
+            .Include(s => s.Location)
+            .FirstOrDefaultAsync(s => s.Id == survivorId);
         if (survivor is null) return new NotFoundResult();
 
         survivor.Name = Name ?? survivor.Name;
         survivor.IsAlive = IsAlive ?? survivor.IsAlive;
 
-        if (locationId.HasValue) survivor.LocationId = locationId.Value;
+        if (locationId.HasValue)
+        {
+            survivor.LocationId = locationId;
+            foreach (var item in survivor.Inventory)
+            {
+                item.LocationId = locationId;
+            }
+        }
 
         await dbContext.SaveChangesAsync();
         return new OkObjectResult(survivor);
@@ -56,7 +68,6 @@ public abstract class SurvivorService
 
         dbContext.Survivors.Remove(survivor);
         await dbContext.SaveChangesAsync();
-
         return new OkObjectResult(survivor);
     }
 
