@@ -1,14 +1,19 @@
 using ApocSurviveHub.API.Models;
-using ApocSurviveHub.API.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using ApocSurviveHub.API.Interfaces;
 
-namespace Services;
+namespace ApocSurviveHub.API.Services;
 
-public abstract class SurvivorService
+public class SurvivorService
 {
-    public static async Task<IActionResult> CreateSurvivor(
-    AppDbContext dbContext,
+    private readonly ICrud<Survivor> _survivorRepository;
+    private readonly ICrud<Item> _itemRepository;
+
+    public SurvivorService(ICrud<Survivor> survivorRepository, ICrud<Item> itemRepository)
+    {
+        _survivorRepository = survivorRepository;
+        _itemRepository = itemRepository;
+    }
+    public Survivor CreateSurvivor(
     string Name,
     bool IsAlive,
     int? locationId)
@@ -20,30 +25,28 @@ public abstract class SurvivorService
             survivor.LocationId = locationId.Value;
         }
 
-        dbContext.Survivors.Add(survivor);
-        await dbContext.SaveChangesAsync();
+        _survivorRepository.Create(survivor);
 
-        return new CreatedResult($"/Survivor/{survivor.Id}", survivor);
+        return survivor;
     }
-    public static IEnumerable<Survivor> GetSurvivors(AppDbContext dbContext)
+    public IEnumerable<Survivor> GetSurvivors()
     {
-        return dbContext.Survivors.Include(s => s.Inventory)
-        .Include(s => s.Location)
-        .ThenInclude(l => l!.Coordinates).ToList();
+        return _survivorRepository.GetAll(s => s.Inventory, s => s.Location, s => s.Location.Coordinates);
     }
 
-    public static async Task<IActionResult> UpdateSurvivor(
-        AppDbContext dbContext,
-        int survivorId,
+    public Survivor GetById(int survivorId)
+    {
+        return _survivorRepository.GetById(survivorId, s => s.Inventory, s => s.Location, s => s.Location.Coordinates);
+    }
+
+    public Survivor? UpdateSurvivor(
+        int id,
         string? Name,
         bool? IsAlive,
         int? locationId)
     {
-        var survivor = await dbContext.Survivors
-            .Include(s => s.Inventory)
-            .Include(s => s.Location)
-            .FirstOrDefaultAsync(s => s.Id == survivorId);
-        if (survivor is null) return new NotFoundResult();
+        var survivor = _survivorRepository.GetById(id, s => s.Inventory, s => s.Location);
+        if (survivor is null) return null;
 
         survivor.Name = Name ?? survivor.Name;
         survivor.IsAlive = IsAlive ?? survivor.IsAlive;
@@ -57,29 +60,34 @@ public abstract class SurvivorService
             }
         }
 
-        await dbContext.SaveChangesAsync();
-        return new OkObjectResult(survivor);
+        return survivor;
     }
 
-    public static async Task<IActionResult> DeleteSurvivor(AppDbContext dbContext, int survivorId)
+    public Survivor? DeleteSurvivor(int survivorId)
     {
-        var survivor = await dbContext.Survivors.FindAsync(survivorId);
-        if (survivor is null) return new NotFoundResult();
+        var survivor = _survivorRepository.GetById(survivorId);
+        if (survivor is null) return null;
 
-        dbContext.Survivors.Remove(survivor);
-        await dbContext.SaveChangesAsync();
-        return new OkObjectResult(survivor);
+        _survivorRepository.Delete(survivor);
+        return survivor;
     }
 
     // Survivor item handling
 
-    public static async Task<IActionResult> AddItem(AppDbContext dbContext, int survivorId, int itemId)
+    public Survivor? AddItem(int survivorId, int itemId)
     {
-        var survivor = await dbContext.Survivors.FindAsync(survivorId);
-        if (survivor is null) return new NotFoundResult();
+        var survivor = _survivorRepository.GetById(survivorId);
+        if (survivor is null) return null;
 
-        var item = await dbContext.Items.FindAsync(itemId);
-        if (item is null) return new NotFoundResult();
+        var item = _itemRepository.GetById(itemId);
+        if (item is null) return null;
+
+        if (survivor.LocationId is null)
+        {
+            survivor.Inventory.Add(item);
+            _survivorRepository.Update(survivor);
+            return survivor;
+        }
 
         if (item.LocationId is not null)
         {
@@ -87,7 +95,6 @@ public abstract class SurvivorService
             {
                 item.LocationId = survivor.LocationId;
                 item.Location = survivor.Location;
-                await dbContext.SaveChangesAsync();
             }
             else
             {
@@ -98,25 +105,23 @@ public abstract class SurvivorService
         {
             item.LocationId = survivor.LocationId;
             item.Location = survivor.Location;
-            survivor.Inventory.Add(item);
-            await dbContext.SaveChangesAsync();
+            _survivorRepository.Update(survivor);
         }
 
-        return new OkObjectResult(survivor);
+        return null;
     }
 
-    public static async Task<IActionResult> RemoveItem(AppDbContext dbContext, int survivorId, int itemId)
+    public Survivor? RemoveItem(int survivorId, int itemId)
     {
-        var survivor = await dbContext.Survivors.FindAsync(survivorId);
-        if (survivor is null) return new NotFoundResult();
+        var survivor = _survivorRepository.GetById(survivorId);
+        if (survivor is null) return null;
 
-        var item = await dbContext.Items.FindAsync(itemId);
-        if (item is null) return new NotFoundResult();
-
+        var item = _itemRepository.GetById(itemId);
+        if (item is null) return null;
         survivor.Inventory.Remove(item);
-        await dbContext.SaveChangesAsync();
+        _survivorRepository.Update(survivor);
 
-        return new OkObjectResult(survivor);
+        return survivor;
     }
 }
 

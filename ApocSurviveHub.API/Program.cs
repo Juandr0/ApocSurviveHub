@@ -1,8 +1,9 @@
 using System.Text.Json.Serialization;
 using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Data;
-using Microsoft.EntityFrameworkCore;
-using Services;
+using ApocSurviveHub.API.Interfaces;
+using ApocSurviveHub.API.Repository;
+using ApocSurviveHub.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,19 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 builder.Services.AddDbContext<AppDbContext>();
+
+// Repositories
+builder.Services.AddScoped<ICrud<Horde>, CrudRepository<Horde>>();
+builder.Services.AddScoped<HordeService>();
+
+builder.Services.AddScoped<ICrud<Survivor>, CrudRepository<Survivor>>();
+builder.Services.AddScoped<SurvivorService>();
+
+builder.Services.AddScoped<ICrud<Item>, CrudRepository<Item>>();
+builder.Services.AddScoped<ItemService>();
+
+builder.Services.AddScoped<ICrud<Location>, CrudRepository<Location>>();
+builder.Services.AddScoped<LocationService>();
 
 var app = builder.Build();
 
@@ -28,82 +42,97 @@ app.UseHttpsRedirection();
 // SURVIVORS START //
 /////////////////////
 
-app.MapPost("/Survivor", (AppDbContext dbContext, string Name, bool IsAlive, int? locationId) =>
+app.MapPost("/Survivor", (SurvivorService survivorService, string Name, bool IsAlive, int? locationId) =>
 {
-    return SurvivorService.CreateSurvivor(dbContext, Name, IsAlive, locationId);
+    return survivorService.CreateSurvivor(Name, IsAlive, locationId);
 });
 
-app.MapGet("/Survivor", (AppDbContext dbContext) =>
+app.MapGet("/Survivor/Get/All", (SurvivorService survivorService) =>
 {
-    return SurvivorService.GetSurvivors(dbContext);
+    return survivorService.GetSurvivors();
 });
 
-app.MapPut("/Survivor", (AppDbContext dbContext, int survivorId, string? Name, bool? IsAlive, int? locationId) =>
+app.MapGet("/Survivor/Get/ById", (SurvivorService survivorService, int survivorId) =>
 {
-    return SurvivorService.UpdateSurvivor(dbContext, survivorId, Name, IsAlive, locationId);
+    return survivorService.GetById(survivorId);
 });
 
-app.MapDelete("/Survivor", (AppDbContext dbContext, int survivorId) =>
+app.MapPut("/Survivor", (SurvivorService survivorService, int survivorId, string? Name, bool? IsAlive, int? locationId) =>
 {
-    return SurvivorService.DeleteSurvivor(dbContext, survivorId);
+    return survivorService.UpdateSurvivor(survivorId, Name, IsAlive, locationId);
 });
 
-app.MapPut("/Survivor/Inventory/Add", (AppDbContext dbContext, int survivorId, int itemId) =>
+app.MapDelete("/Survivor", (SurvivorService survivorService, int survivorId) =>
 {
-    return SurvivorService.AddItem(dbContext, survivorId, itemId);
+    return survivorService.DeleteSurvivor(survivorId);
 });
 
-app.MapPut("/Survivor/Inventory/Remove", (AppDbContext dbContext, int survivorId, int itemId) =>
+app.MapPut("/Survivor/Inventory/Add", (SurvivorService survivorService, ItemService itemService, int survivorId, int itemId) =>
 {
-    return SurvivorService.RemoveItem(dbContext, survivorId, itemId);
+    return survivorService.AddItem(survivorId, itemId);
+});
+
+app.MapPut("/Survivor/Inventory/Remove", (SurvivorService survivorService, ItemService itemService, int survivorId, int itemId) =>
+{
+    return survivorService.RemoveItem(survivorId, itemId);
 });
 
 /////////////////////
 /// HORDES START ////
 /////////////////////
 
-app.MapPost("/Horde", (AppDbContext dbContext, string Name, int ThreatLevel, int? locationId) =>
+app.MapPost("/Horde", (HordeService hordeService, string name, int threatLevel, int? locationId) =>
 {
-    return HordeService.CreateHorde(dbContext, Name, ThreatLevel, locationId);
+    return hordeService.CreateHorde(name, threatLevel, locationId);
 });
 
-app.MapGet("/Horde", (AppDbContext dbContext) =>
+app.MapGet("/Horde/Get/All", (HordeService hordeService) =>
 {
-    return HordeService.GetHordes(dbContext);
+    return hordeService.GetHordes();
 });
 
-app.MapPut("/Horde", (AppDbContext dbContext, int hordeId, string? Name, int? ThreatLevel, int? locationId) =>
+app.MapGet("/Horde/Get/ById", (HordeService hordeService, int id) =>
 {
-    return HordeService.UpdateHorde(dbContext, hordeId, Name, ThreatLevel, locationId);
+    return hordeService.GetById(id);
 });
 
-app.MapDelete("/Horde", (AppDbContext dbContext, int hordeId) =>
+app.MapPut("/Horde", (HordeService hordeService, int hordeId, string? name, int? threatLevel, int? locationId) =>
 {
-    return HordeService.DeleteHorde(dbContext, hordeId);
+    hordeService.UpdateHorde(hordeId, name, threatLevel, locationId);
+});
+
+app.MapDelete("/Horde/", (HordeService hordeService, int hordeId) =>
+{
+    hordeService.DeleteHorde(hordeId);
 });
 
 /////////////////////
 //// ITEMS START ////
 /////////////////////
 
-app.MapPost("/Item", (AppDbContext dbContext, string name, string type, int? locationId) =>
+app.MapPost("/Item", (ItemService itemService, string name, string type, int? locationId) =>
 {
-    return ItemService.CreateItem(dbContext, name, type, locationId);
+    return itemService.CreateItem(name, type, locationId);
 });
 
-app.MapGet("/Item", (AppDbContext dbContext) =>
+app.MapGet("/Item/Get/All", (ItemService itemService) =>
 {
-    return ItemService.GetItems(dbContext);
+    return itemService.GetItems();
 });
 
-app.MapPut("/Item", (AppDbContext dbContext, int itemId, string? name, string? type) =>
+app.MapGet("/Item/Get/ById", (ItemService itemService, int itemId) =>
 {
-    return ItemService.UpdateItem(dbContext, itemId, name, type);
+    return itemService.GetById(itemId);
 });
 
-app.MapDelete("/Item", (AppDbContext dbContext, int itemId) =>
+app.MapPut("/Item", (ItemService itemService, int itemId, string? name, string? type) =>
 {
-    return ItemService.DeleteItem(dbContext, itemId);
+    return itemService.UpdateItem(itemId, name, type);
+});
+
+app.MapDelete("/Item", (ItemService itemService, int itemId) =>
+{
+    return itemService.DeleteItem(itemId);
 });
 
 
@@ -111,19 +140,29 @@ app.MapDelete("/Item", (AppDbContext dbContext, int itemId) =>
 // LOCATIONS START //
 /////////////////////
 
-app.MapPost("/Location", (AppDbContext dbContext, string name, double longitude, double latitude) =>
+app.MapPost("/Location", (LocationService locationService, string name, double longitude, double latitude) =>
 {
-    return LocationService.CreateLocation(dbContext, name, longitude, latitude);
+    return locationService.CreateLocation(name, longitude, latitude);
 });
 
-app.MapGet("/Location", (AppDbContext dbContext) =>
+app.MapGet("/Location/Get/All", (LocationService locationService) =>
 {
-    return LocationService.GetLocations(dbContext);
+    return locationService.GetLocations();
 });
 
-app.MapPut("/Location", (AppDbContext dbContext, int locationId, string? name, double? longitude, double? latitude) =>
+app.MapGet("/Location/Get/ById", (LocationService locationService, int locationId) =>
 {
-    return LocationService.UpdateLocation(dbContext, locationId, name, longitude, latitude);
+    return locationService.GetById(locationId);
+});
+
+app.MapPut("/Location", (LocationService locationService, int locationId, string? name, double? longitude, double? latitude) =>
+{
+    return locationService.UpdateLocation(locationId, name, longitude, latitude);
+});
+
+app.MapDelete("/Location", (LocationService locationService, int locationId) =>
+{
+    return locationService.DeleteLocation(locationId);
 });
 
 

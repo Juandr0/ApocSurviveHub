@@ -1,14 +1,19 @@
 using ApocSurviveHub.API.Models;
-using ApocSurviveHub.API.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using ApocSurviveHub.API.Interfaces;
+using SQLitePCL;
 
-namespace Services;
+namespace ApocSurviveHub.API.Services;
 
-public abstract class HordeService
+public class HordeService
 {
-    public static async Task<IActionResult> CreateHorde(
-        AppDbContext dbContext,
+
+    private readonly ICrud<Horde> _hordeRepository;
+
+    public HordeService(ICrud<Horde> hordeRepository)
+    {
+        _hordeRepository = hordeRepository;
+    }
+    public Horde CreateHorde(
         string Name,
         int ThreatLevel,
         int? locationId)
@@ -20,26 +25,29 @@ public abstract class HordeService
             horde.LocationId = locationId.Value;
         }
 
-        dbContext.Hordes.Add(horde);
-        await dbContext.SaveChangesAsync();
+        _hordeRepository.Create(horde);
 
-        return new CreatedResult($"/Horde/{horde.Id}", horde);
+        return horde;
     }
 
-    public static IEnumerable<Horde> GetHordes(AppDbContext dbContext)
+    public IEnumerable<Horde> GetHordes()
     {
-        return dbContext.Hordes.Include(h => h.Location).ThenInclude(l => l!.Coordinates).ToList();
+        return _hordeRepository.GetAll(h => h.Location, h => h.Location.Coordinates);
     }
 
-    public static async Task<IActionResult> UpdateHorde(
-        AppDbContext dbContext,
-        int hordeId,
-        string? Name,
-        int? ThreatLevel,
-        int? locationId)
+    public Horde GetById(int id)
     {
-        var horde = await dbContext.Hordes.FindAsync(hordeId);
-        if (horde is null) return new NotFoundResult();
+        return _hordeRepository.GetById(id, h => h.Location, h => h.Location.Coordinates);
+    }
+
+    public Horde? UpdateHorde(
+              int id,
+              string? Name,
+              int? ThreatLevel,
+              int? locationId)
+    {
+        var horde = _hordeRepository.GetById(id);
+        if (horde is null) return null;
 
         horde.Name = Name ?? horde.Name;
         horde.ThreatLevel = ThreatLevel ?? horde.ThreatLevel;
@@ -47,24 +55,20 @@ public abstract class HordeService
         if (locationId.HasValue)
         {
             horde.LocationId = locationId.Value;
-            var getLocationFromId = await dbContext.Locations
-            .Include(l => l.Coordinates)
-            .FirstOrDefaultAsync(l => l.Id == locationId);
-            horde.Location = getLocationFromId;
+
         }
 
-        await dbContext.SaveChangesAsync();
-        return new OkObjectResult(horde);
+        _hordeRepository.Update(horde);
+        return horde;
     }
 
-    public static async Task<IActionResult> DeleteHorde(AppDbContext dbContext, int hordeId)
+    public Horde? DeleteHorde(int id)
     {
-        var horde = await dbContext.Hordes.FindAsync(hordeId);
-        if (horde is null) return new NotFoundResult();
+        var horde = _hordeRepository.GetById(id);
+        if (horde is null) return null;
 
-        dbContext.Hordes.Remove(horde);
-        await dbContext.SaveChangesAsync();
+        _hordeRepository.Delete(horde);
 
-        return new OkObjectResult(horde);
+        return horde;
     }
 }

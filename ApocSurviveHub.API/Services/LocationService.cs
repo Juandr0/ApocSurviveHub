@@ -1,38 +1,45 @@
 using ApocSurviveHub.API.Models;
-using ApocSurviveHub.API.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using ApocSurviveHub.API.Interfaces;
 
-namespace Services
+namespace ApocSurviveHub.API.Services
 {
-    public abstract class LocationService
+    public class LocationService
     {
-        public static async Task<IActionResult> CreateLocation(
-            AppDbContext dbContext,
+
+        private readonly ICrud<Location> _locationRepository;
+
+        public LocationService(ICrud<Location> locationRepository)
+        {
+            _locationRepository = locationRepository;
+        }
+
+        public Location CreateLocation(
             string name,
             double _longitude,
             double _latitude)
         {
             var location = new Location(name, _longitude, _latitude);
-            dbContext.Locations.Add(location);
-            await dbContext.SaveChangesAsync();
+            _locationRepository.Create(location);
 
-            return new CreatedResult($"/Location/{location.Id}", location);
+            return location;
         }
-        public static async Task<IEnumerable<Location>> GetLocations(AppDbContext dbContext)
+        public IEnumerable<Location> GetLocations()
         {
-            return await dbContext.Locations.Include(l => l.Coordinates).ToListAsync();
+            return _locationRepository.GetAll(l => l.Coordinates);
         }
 
-        public static async Task<IActionResult> UpdateLocation(
-            AppDbContext dbContext,
+        public Location GetById(int locationId)
+        {
+            return _locationRepository.GetById(locationId, l => l.Coordinates);
+        }
+        public Location? UpdateLocation(
             int locationId,
             string? name,
             double? longitude,
             double? latitude)
         {
-            var location = await dbContext.Locations.FindAsync(locationId);
-            if (location is null) return new NotFoundResult();
+            var location = _locationRepository.GetById(locationId);
+            if (location is null) return null;
 
             location.Name = name ?? location.Name;
 
@@ -42,8 +49,15 @@ namespace Services
                 location.Coordinates.Latitude = (double)latitude;
             }
 
-            await dbContext.SaveChangesAsync();
-            return new OkObjectResult(location);
+            _locationRepository.Update(location);
+            return location;
+        }
+
+        public Location DeleteLocation(int locationId)
+        {
+            var location = _locationRepository.GetById(locationId);
+            _locationRepository.Delete(location);
+            return location;
         }
 
     }
