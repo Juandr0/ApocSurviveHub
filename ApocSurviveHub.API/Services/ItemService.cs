@@ -24,7 +24,7 @@ public class ItemService
         return new CreatedResult($"/Item/{item.Id}", item);
     }
 
-    public Item GetItemById(int id)
+    public Item GetById(int id)
     {
         return _itemRepository.GetById(id, i => i.Location, i => i.Location.Coordinates);
     }

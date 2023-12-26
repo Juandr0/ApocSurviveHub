@@ -2,36 +2,46 @@ using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ApocSurviveHub.API.Interfaces;
 
 namespace ApocSurviveHub.API.Services
 {
-    public abstract class LocationService
+    public class LocationService
     {
-        public static async Task<IActionResult> CreateLocation(
-            AppDbContext dbContext,
+
+        private readonly ICrud<Location> _locationRepository;
+
+        public LocationService(ICrud<Location> locationRepository)
+        {
+            _locationRepository = locationRepository;
+        }
+
+        public IActionResult CreateLocation(
             string name,
             double _longitude,
             double _latitude)
         {
             var location = new Location(name, _longitude, _latitude);
-            dbContext.Locations.Add(location);
-            await dbContext.SaveChangesAsync();
+            _locationRepository.Create(location);
 
             return new CreatedResult($"/Location/{location.Id}", location);
         }
-        public static async Task<IEnumerable<Location>> GetLocations(AppDbContext dbContext)
+        public IEnumerable<Location> GetLocations()
         {
-            return await dbContext.Locations.Include(l => l.Coordinates).ToListAsync();
+            return _locationRepository.GetAll(l => l.Coordinates);
         }
 
-        public static async Task<IActionResult> UpdateLocation(
-            AppDbContext dbContext,
+        public Location GetById(int locationId)
+        {
+            return _locationRepository.GetById(locationId, l => l.Coordinates);
+        }
+        public IActionResult UpdateLocation(
             int locationId,
             string? name,
             double? longitude,
             double? latitude)
         {
-            var location = await dbContext.Locations.FindAsync(locationId);
+            var location = _locationRepository.GetById(locationId);
             if (location is null) return new NotFoundResult();
 
             location.Name = name ?? location.Name;
@@ -42,7 +52,7 @@ namespace ApocSurviveHub.API.Services
                 location.Coordinates.Latitude = (double)latitude;
             }
 
-            await dbContext.SaveChangesAsync();
+            _locationRepository.Update(location);
             return new OkObjectResult(location);
         }
 

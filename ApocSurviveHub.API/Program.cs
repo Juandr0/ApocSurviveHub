@@ -26,6 +26,9 @@ builder.Services.AddScoped<SurvivorService>();
 builder.Services.AddScoped<ICrud<Item>, CrudRepository<Item>>();
 builder.Services.AddScoped<ItemService>();
 
+builder.Services.AddScoped<ICrud<Location>, CrudRepository<Location>>();
+builder.Services.AddScoped<LocationService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -115,7 +118,7 @@ app.MapGet("/Item/Get/All", (ItemService itemService) =>
 
 app.MapGet("/Item/Get/ById", (ItemService itemService, int itemId) =>
 {
-    return itemService.GetItemById(itemId);
+    return itemService.GetById(itemId);
 });
 
 app.MapPut("/Item", (ItemService itemService, int itemId, string? name, string? type) =>
@@ -133,19 +136,24 @@ app.MapDelete("/Item", (ItemService itemService, int itemId) =>
 // LOCATIONS START //
 /////////////////////
 
-app.MapPost("/Location", (AppDbContext dbContext, string name, double longitude, double latitude) =>
+app.MapPost("/Location", (LocationService locationService, string name, double longitude, double latitude) =>
 {
-    return LocationService.CreateLocation(dbContext, name, longitude, latitude);
+    return locationService.CreateLocation(name, longitude, latitude);
 });
 
-app.MapGet("/Location", (AppDbContext dbContext) =>
+app.MapGet("/Location/Get/all", (LocationService locationService) =>
 {
-    return LocationService.GetLocations(dbContext);
+    return locationService.GetLocations();
 });
 
-app.MapPut("/Location", (AppDbContext dbContext, int locationId, string? name, double? longitude, double? latitude) =>
+app.MapGet("/Location/Get/ById", (LocationService locationService, int locationId) =>
 {
-    return LocationService.UpdateLocation(dbContext, locationId, name, longitude, latitude);
+    return locationService.GetById(locationId);
+});
+
+app.MapPut("/Location", (LocationService locationService, int locationId, string? name, double? longitude, double? latitude) =>
+{
+    return locationService.UpdateLocation(locationId, name, longitude, latitude);
 });
 
 
