@@ -1,6 +1,7 @@
 using ApocSurviveHub.API.Models;
-using Microsoft.AspNetCore.Mvc;
 using ApocSurviveHub.API.Interfaces;
+using SQLitePCL;
+
 namespace ApocSurviveHub.API.Services;
 
 public class HordeService
@@ -12,7 +13,7 @@ public class HordeService
     {
         _hordeRepository = hordeRepository;
     }
-    public IActionResult CreateHorde(
+    public Horde CreateHorde(
         string Name,
         int ThreatLevel,
         int? locationId)
@@ -26,27 +27,27 @@ public class HordeService
 
         _hordeRepository.Create(horde);
 
-        return new CreatedResult($"/Horde/{horde.Id}", horde);
+        return horde;
     }
 
     public IEnumerable<Horde> GetHordes()
     {
-        return _hordeRepository.GetAll();
+        return _hordeRepository.GetAll(h => h.Location, h => h.Location.Coordinates);
     }
 
     public Horde GetById(int id)
     {
-        return _hordeRepository.GetById(id);
+        return _hordeRepository.GetById(id, h => h.Location, h => h.Location.Coordinates);
     }
 
-    public IActionResult UpdateHorde(
+    public Horde? UpdateHorde(
               int id,
               string? Name,
               int? ThreatLevel,
               int? locationId)
     {
         var horde = _hordeRepository.GetById(id);
-        if (horde is null) return new NotFoundResult();
+        if (horde is null) return null;
 
         horde.Name = Name ?? horde.Name;
         horde.ThreatLevel = ThreatLevel ?? horde.ThreatLevel;
@@ -58,16 +59,16 @@ public class HordeService
         }
 
         _hordeRepository.Update(horde);
-        return new OkObjectResult(horde);
+        return horde;
     }
 
-    public IActionResult DeleteHorde(int id)
+    public Horde? DeleteHorde(int id)
     {
         var horde = _hordeRepository.GetById(id);
-        if (horde is null) return new NotFoundResult();
+        if (horde is null) return null;
 
         _hordeRepository.Delete(horde);
 
-        return new OkObjectResult(horde);
+        return horde;
     }
 }

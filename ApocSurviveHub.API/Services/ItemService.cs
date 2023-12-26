@@ -1,5 +1,4 @@
 using ApocSurviveHub.API.Models;
-using Microsoft.AspNetCore.Mvc;
 using ApocSurviveHub.API.Interfaces;
 
 namespace ApocSurviveHub.API.Services;
@@ -13,7 +12,7 @@ public class ItemService
     {
         _itemRepository = itemRepository;
     }
-    public IActionResult CreateItem(
+    public Item CreateItem(
             string name,
             string type,
             int? locationId)
@@ -21,7 +20,7 @@ public class ItemService
         var item = new Item(name, type, locationId);
         _itemRepository.Create(item);
 
-        return new CreatedResult($"/Item/{item.Id}", item);
+        return item;
     }
 
     public Item GetById(int id)
@@ -34,26 +33,26 @@ public class ItemService
         return _itemRepository.GetAll(i => i.Location, i => i.Location.Coordinates);
     }
 
-    public IActionResult UpdateItem(int itemId, string? name, string? type)
+    public Item? UpdateItem(int itemId, string? name, string? type)
     {
         var item = _itemRepository.GetById(itemId);
 
-        if (item is null) return new NotFoundResult();
+        if (item is null) return null;
 
         item.Name = name ?? item.Name;
         item.Type = type ?? item.Type;
 
         _itemRepository.Update(item);
-        return new OkObjectResult(item);
+        return item;
     }
 
-    public IActionResult DeleteItem(int itemId)
+    public Item? DeleteItem(int itemId)
     {
         var item = _itemRepository.GetById(itemId);
-        if (item is null) return new NotFoundResult();
+        if (item is null) return null;
 
         _itemRepository.Delete(item);
 
-        return new OkObjectResult(item);
+        return item;
     }
 }

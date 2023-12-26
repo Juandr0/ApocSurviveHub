@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ApocSurviveHub.API.Interfaces;
 using ApocSurviveHub.API.Repository;
 using ApocSurviveHub.API.Services;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,9 +49,14 @@ app.MapPost("/Survivor", (SurvivorService survivorService, string Name, bool IsA
     return survivorService.CreateSurvivor(Name, IsAlive, locationId);
 });
 
-app.MapGet("/Survivor", (SurvivorService survivorService) =>
+app.MapGet("/Survivor/Get/All", (SurvivorService survivorService) =>
 {
     return survivorService.GetSurvivors();
+});
+
+app.MapGet("/Survivor/Get/ById", (SurvivorService survivorService, int survivorId) =>
+{
+    return survivorService.GetById(survivorId);
 });
 
 app.MapPut("/Survivor", (SurvivorService survivorService, int survivorId, string? Name, bool? IsAlive, int? locationId) =>
@@ -79,7 +85,7 @@ app.MapPut("/Survivor/Inventory/Remove", (SurvivorService survivorService, ItemS
 
 app.MapPost("/Horde/Add", (HordeService hordeService, string name, int threatLevel, int? locationId) =>
 {
-    hordeService.CreateHorde(name, threatLevel, locationId);
+    return hordeService.CreateHorde(name, threatLevel, locationId);
 });
 
 app.MapGet("/Horde/Get/All", (HordeService hordeService) =>

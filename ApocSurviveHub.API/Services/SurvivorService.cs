@@ -1,7 +1,4 @@
 using ApocSurviveHub.API.Models;
-using ApocSurviveHub.API.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ApocSurviveHub.API.Interfaces;
 
 namespace ApocSurviveHub.API.Services;
@@ -16,7 +13,7 @@ public class SurvivorService
         _survivorRepository = survivorRepository;
         _itemRepository = itemRepository;
     }
-    public IActionResult CreateSurvivor(
+    public Survivor CreateSurvivor(
     string Name,
     bool IsAlive,
     int? locationId)
@@ -30,25 +27,26 @@ public class SurvivorService
 
         _survivorRepository.Create(survivor);
 
-        return new CreatedResult($"/Survivor/{survivor.Id}", survivor);
+        return survivor;
     }
     public IEnumerable<Survivor> GetSurvivors()
     {
         return _survivorRepository.GetAll(s => s.Inventory, s => s.Location, s => s.Location.Coordinates);
     }
 
-    public IActionResult UpdateSurvivor(
+    public Survivor GetById(int survivorId)
+    {
+        return _survivorRepository.GetById(survivorId, s => s.Inventory, s => s.Location, s => s.Location.Coordinates);
+    }
+
+    public Survivor? UpdateSurvivor(
         int id,
         string? Name,
         bool? IsAlive,
         int? locationId)
     {
-        // var survivor = await dbContext.Survivors
-        //     .Include(s => s.Inventory)
-        //     .Include(s => s.Location)
-        //     .FirstOrDefaultAsync(s => s.Id == survivorId);
-        var survivor = _survivorRepository.GetById(id);
-        if (survivor is null) return new NotFoundResult();
+        var survivor = _survivorRepository.GetById(id, s => s.Inventory, s => s.Location);
+        if (survivor is null) return null;
 
         survivor.Name = Name ?? survivor.Name;
         survivor.IsAlive = IsAlive ?? survivor.IsAlive;
@@ -62,33 +60,33 @@ public class SurvivorService
             }
         }
 
-        return new OkObjectResult(survivor);
+        return survivor;
     }
 
-    public IActionResult DeleteSurvivor(int survivorId)
+    public Survivor? DeleteSurvivor(int survivorId)
     {
         var survivor = _survivorRepository.GetById(survivorId);
-        if (survivor is null) return new NotFoundResult();
+        if (survivor is null) return null;
 
         _survivorRepository.Delete(survivor);
-        return new OkObjectResult(survivor);
+        return survivor;
     }
 
     // Survivor item handling
 
-    public IActionResult AddItem(int survivorId, int itemId)
+    public Survivor? AddItem(int survivorId, int itemId)
     {
         var survivor = _survivorRepository.GetById(survivorId);
-        if (survivor is null) return new NotFoundResult();
+        if (survivor is null) return null;
 
         var item = _itemRepository.GetById(itemId);
-        if (item is null) return new NotFoundResult();
+        if (item is null) return null;
 
         if (survivor.LocationId is null)
         {
             survivor.Inventory.Add(item);
             _survivorRepository.Update(survivor);
-            return new OkObjectResult(survivor);
+            return survivor;
         }
 
         if (item.LocationId is not null)
@@ -110,20 +108,20 @@ public class SurvivorService
             _survivorRepository.Update(survivor);
         }
 
-        return new OkObjectResult(survivor);
+        return null;
     }
 
-    public IActionResult RemoveItem(int survivorId, int itemId)
+    public Survivor? RemoveItem(int survivorId, int itemId)
     {
         var survivor = _survivorRepository.GetById(survivorId);
-        if (survivor is null) return new NotFoundResult();
+        if (survivor is null) return null;
 
         var item = _itemRepository.GetById(itemId);
-        if (item is null) return new NotFoundResult();
+        if (item is null) return null;
         survivor.Inventory.Remove(item);
         _survivorRepository.Update(survivor);
 
-        return new OkObjectResult(survivor);
+        return survivor;
     }
 }
 

@@ -1,7 +1,4 @@
 using ApocSurviveHub.API.Models;
-using ApocSurviveHub.API.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ApocSurviveHub.API.Interfaces;
 
 namespace ApocSurviveHub.API.Services
@@ -16,7 +13,7 @@ namespace ApocSurviveHub.API.Services
             _locationRepository = locationRepository;
         }
 
-        public IActionResult CreateLocation(
+        public Location CreateLocation(
             string name,
             double _longitude,
             double _latitude)
@@ -24,7 +21,7 @@ namespace ApocSurviveHub.API.Services
             var location = new Location(name, _longitude, _latitude);
             _locationRepository.Create(location);
 
-            return new CreatedResult($"/Location/{location.Id}", location);
+            return location;
         }
         public IEnumerable<Location> GetLocations()
         {
@@ -35,14 +32,14 @@ namespace ApocSurviveHub.API.Services
         {
             return _locationRepository.GetById(locationId, l => l.Coordinates);
         }
-        public IActionResult UpdateLocation(
+        public Location? UpdateLocation(
             int locationId,
             string? name,
             double? longitude,
             double? latitude)
         {
             var location = _locationRepository.GetById(locationId);
-            if (location is null) return new NotFoundResult();
+            if (location is null) return null;
 
             location.Name = name ?? location.Name;
 
@@ -53,7 +50,7 @@ namespace ApocSurviveHub.API.Services
             }
 
             _locationRepository.Update(location);
-            return new OkObjectResult(location);
+            return location;
         }
 
     }
