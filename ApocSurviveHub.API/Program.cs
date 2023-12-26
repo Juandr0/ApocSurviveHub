@@ -103,24 +103,29 @@ app.MapDelete("/Horde/", (HordeService hordeService, int hordeId) =>
 //// ITEMS START ////
 /////////////////////
 
-app.MapPost("/Item", (AppDbContext dbContext, string name, string type, int? locationId) =>
+app.MapPost("/Item", (ItemService itemService, string name, string type, int? locationId) =>
 {
-    return ItemService.CreateItem(dbContext, name, type, locationId);
+    return itemService.CreateItem(name, type, locationId);
 });
 
-app.MapGet("/Item", (AppDbContext dbContext) =>
+app.MapGet("/Item/Get/All", (ItemService itemService) =>
 {
-    return ItemService.GetItems(dbContext);
+    return itemService.GetItems();
 });
 
-app.MapPut("/Item", (AppDbContext dbContext, int itemId, string? name, string? type) =>
+app.MapGet("/Item/Get/ById", (ItemService itemService, int itemId) =>
 {
-    return ItemService.UpdateItem(dbContext, itemId, name, type);
+    return itemService.GetItemById(itemId);
 });
 
-app.MapDelete("/Item", (AppDbContext dbContext, int itemId) =>
+app.MapPut("/Item", (ItemService itemService, int itemId, string? name, string? type) =>
 {
-    return ItemService.DeleteItem(dbContext, itemId);
+    return itemService.UpdateItem(itemId, name, type);
+});
+
+app.MapDelete("/Item", (ItemService itemService, int itemId) =>
+{
+    return itemService.DeleteItem(itemId);
 });
 
 

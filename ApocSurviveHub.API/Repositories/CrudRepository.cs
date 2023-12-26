@@ -30,11 +30,18 @@ public class CrudRepository<T> : ICrud<T> where T : class
 
         return query.ToList();
     }
-    public T GetById(int id)
-    {
-        return _dbSet.Find(id);
-    }
 
+    public T GetById(int id, params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = _dbSet;
+
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+
+        return query.FirstOrDefault(e => EF.Property<int>(e, "Id") == id);
+    }
 
     public void Create(T entity)
     {

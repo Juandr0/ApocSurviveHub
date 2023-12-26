@@ -1,7 +1,5 @@
 using ApocSurviveHub.API.Models;
-using ApocSurviveHub.API.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ApocSurviveHub.API.Interfaces;
 
 namespace ApocSurviveHub.API.Services;
@@ -15,48 +13,46 @@ public class ItemService
     {
         _itemRepository = itemRepository;
     }
-    public static async Task<IActionResult> CreateItem(
-            AppDbContext dbContext,
+    public IActionResult CreateItem(
             string name,
             string type,
             int? locationId)
     {
         var item = new Item(name, type, locationId);
-        dbContext.Items.Add(item);
-
-        await dbContext.SaveChangesAsync();
+        _itemRepository.Create(item);
 
         return new CreatedResult($"/Item/{item.Id}", item);
     }
 
-    public static IEnumerable<Item> GetItems(AppDbContext dbContext)
+    public Item GetItemById(int id)
     {
-        return dbContext.Items.ToList();
+        return _itemRepository.GetById(id, i => i.Location, i => i.Location.Coordinates);
     }
 
-    public static async Task<IActionResult> UpdateItem(AppDbContext dbContext, int itemId, string? name, string? type)
+    public IEnumerable<Item> GetItems()
     {
-        var item = await dbContext.Items.
-        Include(i => i.LocationId).
-        Include(i => i.Location).
-        FirstOrDefaultAsync(i => i.Id == itemId);
+        return _itemRepository.GetAll(i => i.Location, i => i.Location.Coordinates);
+    }
+
+    public IActionResult UpdateItem(int itemId, string? name, string? type)
+    {
+        var item = _itemRepository.GetById(itemId);
 
         if (item is null) return new NotFoundResult();
 
         item.Name = name ?? item.Name;
         item.Type = type ?? item.Type;
 
-        await dbContext.SaveChangesAsync();
+        _itemRepository.Update(item);
         return new OkObjectResult(item);
     }
 
-    public static async Task<IActionResult> DeleteItem(AppDbContext dbContext, int itemId)
+    public IActionResult DeleteItem(int itemId)
     {
-        var item = await dbContext.Items.FindAsync(itemId);
+        var item = _itemRepository.GetById(itemId);
         if (item is null) return new NotFoundResult();
 
-        dbContext.Items.Remove(item);
-        await dbContext.SaveChangesAsync();
+        _itemRepository.Delete(item);
 
         return new OkObjectResult(item);
     }

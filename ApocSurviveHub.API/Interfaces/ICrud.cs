@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 namespace ApocSurviveHub.API.Interfaces;
 public interface ICrud<T>
 {
-    T GetById(int id);
+    T GetById(int id, params Expression<Func<T, object>>[] includes);
     IEnumerable<T> GetAll(params Expression<Func<T, object>>[] includes);
     void Create(T entity);
     void Update(T entity);
