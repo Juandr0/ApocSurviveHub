@@ -1,11 +1,9 @@
 using System.Text.Json.Serialization;
 using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Data;
-using Microsoft.EntityFrameworkCore;
 using ApocSurviveHub.API.Interfaces;
 using ApocSurviveHub.API.Repository;
 using ApocSurviveHub.API.Services;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,7 +81,7 @@ app.MapPut("/Survivor/Inventory/Remove", (SurvivorService survivorService, ItemS
 /// HORDES START ////
 /////////////////////
 
-app.MapPost("/Horde/Add", (HordeService hordeService, string name, int threatLevel, int? locationId) =>
+app.MapPost("/Horde", (HordeService hordeService, string name, int threatLevel, int? locationId) =>
 {
     return hordeService.CreateHorde(name, threatLevel, locationId);
 });
@@ -147,7 +145,7 @@ app.MapPost("/Location", (LocationService locationService, string name, double l
     return locationService.CreateLocation(name, longitude, latitude);
 });
 
-app.MapGet("/Location/Get/all", (LocationService locationService) =>
+app.MapGet("/Location/Get/All", (LocationService locationService) =>
 {
     return locationService.GetLocations();
 });
@@ -160,6 +158,11 @@ app.MapGet("/Location/Get/ById", (LocationService locationService, int locationI
 app.MapPut("/Location", (LocationService locationService, int locationId, string? name, double? longitude, double? latitude) =>
 {
     return locationService.UpdateLocation(locationId, name, longitude, latitude);
+});
+
+app.MapDelete("/Location", (LocationService locationService, int locationId) =>
+{
+    return locationService.DeleteLocation(locationId);
 });
 
 

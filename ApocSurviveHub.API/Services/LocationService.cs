@@ -53,5 +53,12 @@ namespace ApocSurviveHub.API.Services
             return location;
         }
 
+        public Location DeleteLocation(int locationId)
+        {
+            var location = _locationRepository.GetById(locationId);
+            _locationRepository.Delete(location);
+            return location;
+        }
+
     }
 }
