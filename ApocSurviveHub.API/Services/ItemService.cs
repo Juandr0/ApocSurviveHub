@@ -2,11 +2,19 @@ using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ApocSurviveHub.API.Interfaces;
 
 namespace ApocSurviveHub.API.Services;
 
-public abstract class ItemService
+public class ItemService
 {
+
+    private readonly ICrud<Item> _itemRepository;
+
+    public ItemService(ICrud<Item> itemRepository)
+    {
+        _itemRepository = itemRepository;
+    }
     public static async Task<IActionResult> CreateItem(
             AppDbContext dbContext,
             string name,

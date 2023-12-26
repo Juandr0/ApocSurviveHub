@@ -1,7 +1,7 @@
-using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Data;
 using Microsoft.EntityFrameworkCore;
 using ApocSurviveHub.API.Interfaces;
+using System.Linq.Expressions;
 
 namespace ApocSurviveHub.API.Repository;
 
@@ -18,15 +18,23 @@ public class CrudRepository<T> : ICrud<T> where T : class
         _dbSet = dbContext.Set<T>();
     }
 
+    // Get all query with the posibiltiy to add incldues 
+    public IEnumerable<T> GetAll(params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = _dbSet;
+
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+
+        return query.ToList();
+    }
     public T GetById(int id)
     {
         return _dbSet.Find(id);
     }
 
-    public IEnumerable<T> GetAll()
-    {
-        return _dbSet.ToList();
-    }
 
     public void Create(T entity)
     {
@@ -45,4 +53,6 @@ public class CrudRepository<T> : ICrud<T> where T : class
         _dbContext.Remove(entity);
         _dbContext.SaveChanges();
     }
+
+
 }

@@ -20,6 +20,12 @@ builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddScoped<ICrud<Horde>, CrudRepository<Horde>>();
 builder.Services.AddScoped<HordeService>();
 
+builder.Services.AddScoped<ICrud<Survivor>, CrudRepository<Survivor>>();
+builder.Services.AddScoped<SurvivorService>();
+
+builder.Services.AddScoped<ICrud<Item>, CrudRepository<Item>>();
+builder.Services.AddScoped<ItemService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -34,34 +40,34 @@ app.UseHttpsRedirection();
 // SURVIVORS START //
 /////////////////////
 
-app.MapPost("/Survivor", (AppDbContext dbContext, string Name, bool IsAlive, int? locationId) =>
+app.MapPost("/Survivor", (SurvivorService survivorService, string Name, bool IsAlive, int? locationId) =>
 {
-    return SurvivorService.CreateSurvivor(dbContext, Name, IsAlive, locationId);
+    return survivorService.CreateSurvivor(Name, IsAlive, locationId);
 });
 
-app.MapGet("/Survivor", (AppDbContext dbContext) =>
+app.MapGet("/Survivor", (SurvivorService survivorService) =>
 {
-    return SurvivorService.GetSurvivors(dbContext);
+    return survivorService.GetSurvivors();
 });
 
-app.MapPut("/Survivor", (AppDbContext dbContext, int survivorId, string? Name, bool? IsAlive, int? locationId) =>
+app.MapPut("/Survivor", (SurvivorService survivorService, int survivorId, string? Name, bool? IsAlive, int? locationId) =>
 {
-    return SurvivorService.UpdateSurvivor(dbContext, survivorId, Name, IsAlive, locationId);
+    return survivorService.UpdateSurvivor(survivorId, Name, IsAlive, locationId);
 });
 
-app.MapDelete("/Survivor", (AppDbContext dbContext, int survivorId) =>
+app.MapDelete("/Survivor", (SurvivorService survivorService, int survivorId) =>
 {
-    return SurvivorService.DeleteSurvivor(dbContext, survivorId);
+    return survivorService.DeleteSurvivor(survivorId);
 });
 
-app.MapPut("/Survivor/Inventory/Add", (AppDbContext dbContext, int survivorId, int itemId) =>
+app.MapPut("/Survivor/Inventory/Add", (SurvivorService survivorService, ItemService itemService, int survivorId, int itemId) =>
 {
-    return SurvivorService.AddItem(dbContext, survivorId, itemId);
+    return survivorService.AddItem(survivorId, itemId);
 });
 
-app.MapPut("/Survivor/Inventory/Remove", (AppDbContext dbContext, int survivorId, int itemId) =>
+app.MapPut("/Survivor/Inventory/Remove", (SurvivorService survivorService, ItemService itemService, int survivorId, int itemId) =>
 {
-    return SurvivorService.RemoveItem(dbContext, survivorId, itemId);
+    return survivorService.RemoveItem(survivorId, itemId);
 });
 
 /////////////////////

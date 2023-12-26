@@ -1,8 +1,6 @@
 using ApocSurviveHub.API.Models;
-using ApocSurviveHub.API.Data;
 using Microsoft.AspNetCore.Mvc;
 using ApocSurviveHub.API.Interfaces;
-
 namespace ApocSurviveHub.API.Services;
 
 public class HordeService
