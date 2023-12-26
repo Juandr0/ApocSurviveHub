@@ -1,14 +1,20 @@
 using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using ApocSurviveHub.API.Interfaces;
 
-namespace Services;
+namespace ApocSurviveHub.API.Services;
 
-public abstract class HordeService
+public class HordeService
 {
-    public static async Task<IActionResult> CreateHorde(
-        AppDbContext dbContext,
+
+    private readonly ICrud<Horde> _hordeRepository;
+
+    public HordeService(ICrud<Horde> hordeRepository)
+    {
+        _hordeRepository = hordeRepository;
+    }
+    public IActionResult CreateHorde(
         string Name,
         int ThreatLevel,
         int? locationId)
@@ -20,25 +26,28 @@ public abstract class HordeService
             horde.LocationId = locationId.Value;
         }
 
-        dbContext.Hordes.Add(horde);
-        await dbContext.SaveChangesAsync();
+        _hordeRepository.Create(horde);
 
         return new CreatedResult($"/Horde/{horde.Id}", horde);
     }
 
-    public static IEnumerable<Horde> GetHordes(AppDbContext dbContext)
+    public IEnumerable<Horde> GetHordes()
     {
-        return dbContext.Hordes.Include(h => h.Location).ThenInclude(l => l!.Coordinates).ToList();
+        return _hordeRepository.GetAll();
     }
 
-    public static async Task<IActionResult> UpdateHorde(
-        AppDbContext dbContext,
-        int hordeId,
-        string? Name,
-        int? ThreatLevel,
-        int? locationId)
+    public Horde GetById(int id)
     {
-        var horde = await dbContext.Hordes.FindAsync(hordeId);
+        return _hordeRepository.GetById(id);
+    }
+
+    public IActionResult UpdateHorde(
+              int id,
+              string? Name,
+              int? ThreatLevel,
+              int? locationId)
+    {
+        var horde = _hordeRepository.GetById(id);
         if (horde is null) return new NotFoundResult();
 
         horde.Name = Name ?? horde.Name;
@@ -47,23 +56,19 @@ public abstract class HordeService
         if (locationId.HasValue)
         {
             horde.LocationId = locationId.Value;
-            var getLocationFromId = await dbContext.Locations
-            .Include(l => l.Coordinates)
-            .FirstOrDefaultAsync(l => l.Id == locationId);
-            horde.Location = getLocationFromId;
+
         }
 
-        await dbContext.SaveChangesAsync();
+        _hordeRepository.Update(horde);
         return new OkObjectResult(horde);
     }
 
-    public static async Task<IActionResult> DeleteHorde(AppDbContext dbContext, int hordeId)
+    public IActionResult DeleteHorde(int id)
     {
-        var horde = await dbContext.Hordes.FindAsync(hordeId);
+        var horde = _hordeRepository.GetById(id);
         if (horde is null) return new NotFoundResult();
 
-        dbContext.Hordes.Remove(horde);
-        await dbContext.SaveChangesAsync();
+        _hordeRepository.Delete(horde);
 
         return new OkObjectResult(horde);
     }

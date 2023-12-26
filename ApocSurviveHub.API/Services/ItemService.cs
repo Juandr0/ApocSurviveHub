@@ -3,7 +3,7 @@ using ApocSurviveHub.API.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Services;
+namespace ApocSurviveHub.API.Services;
 
 public abstract class ItemService
 {

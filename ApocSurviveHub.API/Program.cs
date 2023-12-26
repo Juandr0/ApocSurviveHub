@@ -2,7 +2,9 @@ using System.Text.Json.Serialization;
 using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Data;
 using Microsoft.EntityFrameworkCore;
-using Services;
+using ApocSurviveHub.API.Interfaces;
+using ApocSurviveHub.API.Repository;
+using ApocSurviveHub.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,10 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 builder.Services.AddDbContext<AppDbContext>();
+
+// Repositories
+builder.Services.AddScoped<ICrud<Horde>, CrudRepository<Horde>>();
+builder.Services.AddScoped<HordeService>();
 
 var app = builder.Build();
 
@@ -62,24 +68,29 @@ app.MapPut("/Survivor/Inventory/Remove", (AppDbContext dbContext, int survivorId
 /// HORDES START ////
 /////////////////////
 
-app.MapPost("/Horde", (AppDbContext dbContext, string Name, int ThreatLevel, int? locationId) =>
+app.MapPost("/Horde/Add", (HordeService hordeService, string name, int threatLevel, int? locationId) =>
 {
-    return HordeService.CreateHorde(dbContext, Name, ThreatLevel, locationId);
+    hordeService.CreateHorde(name, threatLevel, locationId);
 });
 
-app.MapGet("/Horde", (AppDbContext dbContext) =>
+app.MapGet("/Horde/Get/All", (HordeService hordeService) =>
 {
-    return HordeService.GetHordes(dbContext);
+    return hordeService.GetHordes();
 });
 
-app.MapPut("/Horde", (AppDbContext dbContext, int hordeId, string? Name, int? ThreatLevel, int? locationId) =>
+app.MapGet("/Horde/Get/ById", (HordeService hordeService, int id) =>
 {
-    return HordeService.UpdateHorde(dbContext, hordeId, Name, ThreatLevel, locationId);
+    return hordeService.GetById(id);
 });
 
-app.MapDelete("/Horde", (AppDbContext dbContext, int hordeId) =>
+app.MapPut("/Horde", (HordeService hordeService, int hordeId, string? name, int? threatLevel, int? locationId) =>
 {
-    return HordeService.DeleteHorde(dbContext, hordeId);
+    hordeService.UpdateHorde(hordeId, name, threatLevel, locationId);
+});
+
+app.MapDelete("/Horde/", (HordeService hordeService, int hordeId) =>
+{
+    hordeService.DeleteHorde(hordeId);
 });
 
 /////////////////////
