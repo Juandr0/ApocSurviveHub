@@ -40,11 +40,12 @@ app.UseHttpsRedirection();
 
 /////////////////////
 /////// Tags ////////
+/////////////////////
+
 var survivorTag = "Survivor";
 var hordeTag = "Horde";
 var itemTag = "Item";
 var locationTag = "Location";
-
 
 /////////////////////
 // SURVIVORS START //
