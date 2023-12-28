@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApocSurviveHub.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231227073052_SqLite")]
+    [Migration("20231228144326_SqLite")]
     partial class SqLite
     {
         /// <inheritdoc />

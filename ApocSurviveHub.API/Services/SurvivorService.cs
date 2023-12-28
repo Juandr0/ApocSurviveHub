@@ -2,12 +2,10 @@ using ApocSurviveHub.API.Models;
 using ApocSurviveHub.API.Interfaces;
 
 namespace ApocSurviveHub.API.Services;
-
 public class SurvivorService
 {
     private readonly ICrud<Survivor> _survivorRepository;
     private readonly ICrud<Item> _itemRepository;
-
     public SurvivorService(ICrud<Survivor> survivorRepository, ICrud<Item> itemRepository)
     {
         _survivorRepository = survivorRepository;

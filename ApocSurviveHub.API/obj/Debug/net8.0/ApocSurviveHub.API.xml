@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ApocSurviveHub.API</name>
+    </assembly>
+    <members>
+        <member name="T:ApocSurviveHub.API.Migrations.Initial">
+            <inheritdoc />
+        </member>
+        <member name="M:ApocSurviveHub.API.Migrations.Initial.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ApocSurviveHub.API.Migrations.Initial.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ApocSurviveHub.API.Migrations.Initial.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ApocSurviveHub.API.Migrations.SqLite">
+            <inheritdoc />
+        </member>
+        <member name="M:ApocSurviveHub.API.Migrations.SqLite.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ApocSurviveHub.API.Migrations.SqLite.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ApocSurviveHub.API.Migrations.SqLite.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

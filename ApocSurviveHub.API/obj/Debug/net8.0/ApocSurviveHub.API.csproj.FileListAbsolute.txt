@@ -256,3 +256,5 @@
 /Users/majkcb/ApocSurviveHub/ApocSurviveHub.API/obj/Debug/net8.0/ApocSurviveHub.API.pdb
 /Users/majkcb/ApocSurviveHub/ApocSurviveHub.API/obj/Debug/net8.0/ApocSurviveHub.API.genruntimeconfig.cache
 /Users/majkcb/ApocSurviveHub/ApocSurviveHub.API/obj/Debug/net8.0/ref/ApocSurviveHub.API.dll
+/Users/majkcb/ApocSurviveHub/ApocSurviveHub.API/bin/Debug/net8.0/ApocSurviveHub.API.xml
+/Users/majkcb/ApocSurviveHub/ApocSurviveHub.API/obj/Debug/net8.0/ApocSurviveHub.API.xml
