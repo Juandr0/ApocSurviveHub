@@ -5,7 +5,7 @@
 namespace ApocSurviveHub.API.Migrations
 {
     /// <inheritdoc />
-    public partial class SqLite : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

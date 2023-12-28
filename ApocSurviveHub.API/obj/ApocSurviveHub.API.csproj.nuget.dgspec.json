@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/alexander/Documents/dev/Backend/Apoc Survive Hub/ApocSurviveHub/ApocSurviveHub.API/ApocSurviveHub.API.csproj": {}
+    "/Users/majkcb/ApocSurviveHub/ApocSurviveHub.API/ApocSurviveHub.API.csproj": {}
   },
   "projects": {
-    "/Users/alexander/Documents/dev/Backend/Apoc Survive Hub/ApocSurviveHub/ApocSurviveHub.API/ApocSurviveHub.API.csproj": {
+    "/Users/majkcb/ApocSurviveHub/ApocSurviveHub.API/ApocSurviveHub.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/alexander/Documents/dev/Backend/Apoc Survive Hub/ApocSurviveHub/ApocSurviveHub.API/ApocSurviveHub.API.csproj",
+        "projectUniqueName": "/Users/majkcb/ApocSurviveHub/ApocSurviveHub.API/ApocSurviveHub.API.csproj",
         "projectName": "ApocSurviveHub.API",
-        "projectPath": "/Users/alexander/Documents/dev/Backend/Apoc Survive Hub/ApocSurviveHub/ApocSurviveHub.API/ApocSurviveHub.API.csproj",
-        "packagesPath": "/Users/alexander/.nuget/packages/",
-        "outputPath": "/Users/alexander/Documents/dev/Backend/Apoc Survive Hub/ApocSurviveHub/ApocSurviveHub.API/obj/",
+        "projectPath": "/Users/majkcb/ApocSurviveHub/ApocSurviveHub.API/ApocSurviveHub.API.csproj",
+        "packagesPath": "/Users/majkcb/.nuget/packages/",
+        "outputPath": "/Users/majkcb/ApocSurviveHub/ApocSurviveHub.API/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/alexander/.nuget/NuGet/NuGet.Config"
+          "/Users/majkcb/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -60,7 +60,7 @@
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.4.0, )"
+              "version": "[6.5.0, )"
             }
           },
           "imports": [
@@ -82,7 +82,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/Users/majkcb/.vscode-dotnet-sdk/.dotnet/sdk/8.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
