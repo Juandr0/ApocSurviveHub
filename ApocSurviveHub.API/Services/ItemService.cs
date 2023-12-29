@@ -7,9 +7,11 @@ public class ItemService
 {
 
     private readonly ICrud<Item> _itemRepository;
+    private readonly ICrud<Location> _locationRepository;
 
-    public ItemService(ICrud<Item> itemRepository)
+    public ItemService(ICrud<Item> itemRepository, ICrud<Location> locationRepository)
     {
+        _locationRepository = locationRepository;
         _itemRepository = itemRepository;
     }
     public Item CreateItem(
@@ -33,11 +35,19 @@ public class ItemService
         return _itemRepository.GetAll(i => i.Location, i => i.Location.Coordinates);
     }
 
-    public Item? UpdateItem(int itemId, string? name, string? type)
+    public Item? UpdateItem(int itemId, string? name, string? type, int? locationId)
     {
         var item = _itemRepository.GetById(itemId);
 
         if (item is null) return null;
+        if (locationId is not null)
+        {
+            var location = _locationRepository.GetById((int)locationId, l => l.Coordinates);
+            if (location is not null)
+            {
+                item.Location = location;
+            }
+        }
 
         item.Name = name ?? item.Name;
         item.Type = type ?? item.Type;

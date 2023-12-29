@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen(options =>
     });
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "ApocSurviveHub.API.xml"));
-    });
+});
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -300,9 +300,9 @@ app.MapGet("/Item/Get/ById", (ItemService itemService, int itemId) =>
     return generatedOperation;
 });
 
-app.MapPut("/Item", (ItemService itemService, int itemId, string? name, string? type) =>
+app.MapPut("/Item", (ItemService itemService, int itemId, string? name, string? type, int? locationId) =>
 {
-    return itemService.UpdateItem(itemId, name, type);
+    return itemService.UpdateItem(itemId, name, type, locationId);
 }).WithTags(itemTag)
 .WithOpenApi(operation => new(operation)
 {
