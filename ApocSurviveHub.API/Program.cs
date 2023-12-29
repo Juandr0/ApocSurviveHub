@@ -52,6 +52,9 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 app.UseHttpsRedirection();
 
 // Maps the endpoint actions 
-MapperController.MapEndpoints(app);
+SurvivorMapper.MapSurvivorActions(app);
+HordeMapper.MapHordeActions(app);
+ItemMapper.MapItemActions(app);
+LocationMapper.MapLocationActions(app);
 
 app.Run();
