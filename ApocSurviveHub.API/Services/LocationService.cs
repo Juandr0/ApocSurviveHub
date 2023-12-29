@@ -38,7 +38,7 @@ namespace ApocSurviveHub.API.Services
             double? longitude,
             double? latitude)
         {
-            var location = _locationRepository.GetById(locationId);
+            var location = _locationRepository.GetById(locationId, l => l.Coordinates);
             if (location is null) return null;
 
             location.Name = name ?? location.Name;
