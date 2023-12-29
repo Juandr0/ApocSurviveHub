@@ -1,3 +1,4 @@
+
 namespace ApocSurviveHub.API.Models
 {
     public class Location
