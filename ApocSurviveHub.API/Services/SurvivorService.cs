@@ -44,7 +44,11 @@ public class SurvivorService
         int? locationId)
     {
         var survivor = _survivorRepository.GetById(id, s => s.Inventory, s => s.Location);
-        if (survivor is null) return null;
+        if (survivor is null)
+        {
+            Console.WriteLine("null survivor");
+            return null;
+        };
 
         survivor.Name = Name ?? survivor.Name;
         survivor.IsAlive = IsAlive ?? survivor.IsAlive;
@@ -57,6 +61,7 @@ public class SurvivorService
                 item.LocationId = locationId;
             }
         }
+        _survivorRepository.Update(survivor);
 
         return survivor;
     }
@@ -82,8 +87,7 @@ public class SurvivorService
 
         if (survivor.LocationId is null)
         {
-            survivor.Inventory.Add(item);
-            _survivorRepository.Update(survivor);
+            AddItemToSurvivor(survivor, item);
             return survivor;
         }
 
@@ -91,8 +95,9 @@ public class SurvivorService
         {
             if (item.LocationId == survivor.LocationId)
             {
-                item.LocationId = survivor.LocationId;
-                item.Location = survivor.Location;
+                UpdateItemLocation(survivor, item);
+                AddItemToSurvivor(survivor, item);
+                return survivor;
             }
             else
             {
@@ -101,9 +106,9 @@ public class SurvivorService
         }
         else
         {
-            item.LocationId = survivor.LocationId;
-            item.Location = survivor.Location;
-            _survivorRepository.Update(survivor);
+            UpdateItemLocation(survivor, item);
+            AddItemToSurvivor(survivor, item);
+            return survivor;
         }
 
         return null;
@@ -120,6 +125,18 @@ public class SurvivorService
         _survivorRepository.Update(survivor);
 
         return survivor;
+    }
+
+    private void UpdateItemLocation(Survivor survivor, Item item)
+    {
+        item.LocationId = survivor.LocationId;
+        item.Location = survivor.Location;
+    }
+
+    private void AddItemToSurvivor(Survivor survivor, Item item)
+    {
+        survivor.Inventory.Add(item);
+        _survivorRepository.Update(survivor);
     }
 }
 

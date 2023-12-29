@@ -55,7 +55,6 @@ public class HordeService
         if (locationId.HasValue)
         {
             horde.LocationId = locationId.Value;
-
         }
 
         _hordeRepository.Update(horde);
